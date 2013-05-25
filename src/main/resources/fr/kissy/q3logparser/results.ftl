@@ -47,8 +47,7 @@
 </div>
 
 <div class="container">
-
-    <h1>[${game.typeName}] ${game.map}</h1>
+    <h1>[${game.typeName}] ${game.map} | Red ${game.redTeamScore} - Blue ${game.blueTeamScore}</h1>
     <table class="table table-bordered" id="game-results">
         <thead>
         <tr class="force-center">

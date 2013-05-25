@@ -29,6 +29,7 @@ public class Game {
     private String map;
     private Integer duration;
     private Map<Integer, Player> players = Maps.newHashMap();
+    private Map<Team, Integer> teamScore = Maps.newHashMap();
 
     transient private Set<Team> pickedUpFlags = Sets.newHashSet();
 
@@ -87,6 +88,11 @@ public class Game {
         }
     }
 
+    public void processTeamScore(Integer redScore, Integer blueScore) {
+        teamScore.put(Team.TEAM_RED, redScore);
+        teamScore.put(Team.TEAM_BLUE, blueScore);
+    }
+
     public void processScore(Integer playerNumber, Integer score) {
         Player player = players.get(playerNumber);
         player.setScore(score);
@@ -129,6 +135,14 @@ public class Game {
         this.map = map;
     }
 
+    public Integer getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Integer duration) {
+        this.duration = duration;
+    }
+
     public Map<Integer, Player> getPlayers() {
         return players;
     }
@@ -137,20 +151,28 @@ public class Game {
         this.players = players;
     }
 
+    public Map<Team, Integer> getTeamScore() {
+        return teamScore;
+    }
+
+    public void setTeamScore(Map<Team, Integer> teamScore) {
+        this.teamScore = teamScore;
+    }
+
+    public Integer getRedTeamScore() {
+        return this.teamScore.get(Team.TEAM_RED);
+    }
+
+    public Integer getBlueTeamScore() {
+        return this.teamScore.get(Team.TEAM_BLUE);
+    }
+
     public Set<Team> getPickedUpFlags() {
         return pickedUpFlags;
     }
 
     public void setPickedUpFlags(Set<Team> pickedUpFlags) {
         this.pickedUpFlags = pickedUpFlags;
-    }
-
-    public Integer getDuration() {
-        return duration;
-    }
-
-    public void setDuration(Integer duration) {
-        this.duration = duration;
     }
 
     @Override
