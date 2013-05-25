@@ -126,7 +126,7 @@
                             <tr class="force-center">
                                 <td>${weaponKill.meanOfDeathName}</td>
                                 <td><span class="badge badge-inverse">${weaponKill.frags}</span></td>
-                                <td><span class="badge badge-inverse">${100 * weaponKill.frags / player.frags?size} %</span></td>
+                                <td><span class="badge badge-inverse">${(100 * weaponKill.frags / player.frags?size)?string("0.##")} %</span></td>
                             </tr>
                         </#if>
                     </#list>
@@ -143,7 +143,7 @@
                             <tr class="force-center">
                                 <td>${playerKill.player.name}</td>
                                 <td><span class="badge badge-inverse">${playerKill.frags}</span></td>
-                                <td><span class="badge badge-inverse">${100 * playerKill.frags / player.frags?size} %</span></td>
+                                <td><span class="badge badge-inverse">${(100 * playerKill.frags / player.frags?size)?string("0.##")} %</span></td>
                             </tr>
                         </#if>
                     </#list>
