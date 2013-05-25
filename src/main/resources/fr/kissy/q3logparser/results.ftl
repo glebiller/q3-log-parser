@@ -81,7 +81,7 @@
             <tr class="force-center">
                 <td><span class="label label-${player.teamCssClass}">${player.teamName}</span></td>
                 <td><a href="#modal_${player_index}" data-toggle="modal">${player.name}</a></td>
-                <td><span class="badge">${(statsEfficiency + flagEfficiency) / 2}</span></td>
+                <td><span class="badge">${(statsEfficiency + flagEfficiency) / 2} %</span></td>
                 <td><span class="badge badge-inverse">${player.score}</span></td>
                 <td><span class="badge badge-inverse">${player.frags?size}</span></td>
                 <td><span class="badge badge-inverse">${player.deaths?size}</span></td>
