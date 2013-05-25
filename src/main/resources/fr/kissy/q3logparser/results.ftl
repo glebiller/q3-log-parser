@@ -76,23 +76,23 @@
         </thead>
         <tbody>
         <#list game.players?values as player>
-            <#assign statsEfficiency = player.frags?size / (1 + player.frags?size + player.deaths?size)>
-            <#assign flagEfficiency = player.flag.returned / (1 + player.flag.returned + player.flag.pickedUp - player.flag.captured)>
+            <#assign statsEfficiency = (100 * player.frags?size / (1 + player.frags?size + player.deaths?size))>
+            <#assign flagEfficiency = (100 * (player.flag.returned + player.flag.captured) / (1 + player.flag.returned + player.flag.captured + player.flag.pickedUp))>
             <tr class="force-center">
                 <td><span class="label label-${player.teamCssClass}">${player.teamName}</span></td>
                 <td><a href="#modal_${player_index}" data-toggle="modal">${player.name}</a></td>
-                <td><span class="badge">${(statsEfficiency + flagEfficiency) / 2} %</span></td>
+                <td><span class="badge">${((statsEfficiency + flagEfficiency) / 2)?string("0.#")} %</span></td>
                 <td><span class="badge badge-inverse">${player.score}</span></td>
                 <td><span class="badge badge-inverse">${player.frags?size}</span></td>
                 <td><span class="badge badge-inverse">${player.deaths?size}</span></td>
                 <td><span class="badge badge-inverse">${player.suicides?size}</span></td>
-                <td><span class="badge badge-inverse">${statsEfficiency} %</span></td>
+                <td><span class="badge badge-inverse">${statsEfficiency?string("0.#")} %</span></td>
                 <td><span class="badge badge-success">${player.streak.frag}</span></td>
                 <td><span class="badge badge-success">${player.streak.death}</span></td>
                 <td><span class="badge badge-warning">${player.flag.captured}</span></td>
                 <td><span class="badge badge-warning">${player.flag.pickedUp}</span></td>
                 <td><span class="badge badge-warning">${player.flag.returned}</span></td>
-                <td><span class="badge badge-warning">${flagEfficiency} %</span></td>
+                <td><span class="badge badge-warning">${flagEfficiency?string("0.#")} %</span></td>
             </tr>
         </#list>
         </tbody>
