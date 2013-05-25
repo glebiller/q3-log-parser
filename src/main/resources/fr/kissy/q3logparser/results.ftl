@@ -47,17 +47,18 @@
 </div>
 
 <div class="container">
-    <h1>[${game.typeName}] ${game.map} | Red ${game.redTeamScore} - Blue ${game.blueTeamScore}</h1>
+    <h1 class="align-team-score">[${game.typeName}] ${game.map}
+        <small><span class="label label-important">R</span> ${game.redTeamScore} - <span class="label label-info">B</span> ${game.blueTeamScore}</small>
+    </h1>
     <table class="table table-bordered" id="game-results">
         <thead>
         <tr class="force-center">
-            <th colspan="3">Player</th>
+            <th colspan="2">Player</th>
             <th colspan="5">Stats</th>
             <th colspan="2">Streak</th>
             <th colspan="3">Flag</th>
         </tr>
         <tr class="force-center">
-            <th>Team</th>
             <th>Name</th>
             <th>Efficiency</th>
             <th>Score</th>
@@ -78,8 +79,11 @@
             <#assign statsEfficiency = (100 * player.frags?size / (1 + player.frags?size + player.deaths?size))>
             <#assign flagEfficiency = (100 * (player.flag.returned + player.flag.captured) / (1 + player.flag.returned + player.flag.captured + player.flag.pickedUp))>
             <tr class="force-center">
-                <td><span class="label label-${player.teamCssClass}">${player.teamName}</span></td>
-                <td><a href="#modal_${player_index}" data-toggle="modal">${player.name}</a></td>
+                <td class="force-left">
+                    <span class="label label-${player.teamCssClass}">${player.teamName}</span>
+                    <a href="#modal_${player_index}" data-toggle="modal">${player.name}
+                    </a>
+                </td>
                 <td><span class="badge">${((statsEfficiency + flagEfficiency) / 2)?string("0.#")} %</span></td>
                 <td><span class="badge badge-inverse">${player.score}</span></td>
                 <td><span class="badge badge-inverse">${player.frags?size}</span></td>

@@ -4,6 +4,13 @@
  td.dataTables_empty {
     text-align: center !important;
 }
+tr td.force-left {
+    text-align: left !important;
+}
+.align-team-score span {
+    vertical-align: text-top;
+    margin-top: 5px;
+}
 
 div.dataTables_filter label {
 	float: right;

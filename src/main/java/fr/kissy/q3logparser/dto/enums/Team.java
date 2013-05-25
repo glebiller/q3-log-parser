@@ -7,8 +7,8 @@ import org.apache.commons.lang3.StringUtils;
  */
 public enum Team {
     TEAM_FREE("", ""),
-    TEAM_RED("Red", "important"),
-    TEAM_BLUE("Blue", "info"),
+    TEAM_RED("R", "important"),
+    TEAM_BLUE("B", "info"),
     TEAM_SPECTATOR("", "");
 
     private final String name;

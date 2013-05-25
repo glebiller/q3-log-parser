@@ -1,5 +1,5 @@
 $.extend(true, $.fn.dataTable.defaults, {
-    "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t"
+    "sDom": "<'row-fluid'<'span12'f>r>t"
 });
 $.extend($.fn.dataTableExt.oStdClasses, {
     "sWrapper": "dataTables_wrapper form-inline"
@@ -24,8 +24,8 @@ $(document).ready(function() {
         "bFilter": true,
         "bSort": true,
         "aoColumnDefs": [
-            {"sType": "html-badge", "aTargets": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]}
+            {"sType": "html-badge", "aTargets": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]}
         ],
-        "aaSorting": [[ 3, "desc" ]]
+        "aaSorting": [[2, "desc"]]
     });
-} );
+});
