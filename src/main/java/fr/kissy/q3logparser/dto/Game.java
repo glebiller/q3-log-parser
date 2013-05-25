@@ -7,9 +7,8 @@ import com.google.common.hash.Hashing;
 import fr.kissy.q3logparser.dto.enums.GameType;
 import fr.kissy.q3logparser.dto.enums.MeanOfDeath;
 import fr.kissy.q3logparser.dto.enums.Team;
-import fr.kissy.q3logparser.dto.funnel.GameFunnel;
+import fr.kissy.q3logparser.funnel.GameFunnel;
 import freemarker.template.Configuration;
-import freemarker.template.Template;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 

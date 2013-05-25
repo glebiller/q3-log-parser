@@ -1,23 +1,21 @@
 package fr.kissy.q3logparser.dto;
 
-import com.google.common.base.Functions;
 import com.google.common.base.Objects;
 import com.google.common.collect.*;
 import fr.kissy.q3logparser.dto.enums.MeanOfDeath;
 import fr.kissy.q3logparser.dto.enums.Team;
+import fr.kissy.q3logparser.dto.kill.PlayerKill;
+import fr.kissy.q3logparser.dto.kill.WeaponKill;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import sun.awt.windows.WPageDialog;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
 
 /**
  * @author Guillaume <lebiller@fullsix.com>
  */
-public class Player {
+public class Player implements Comparable<Player> {
     private Team team = null;
     private String name = null;
     private Integer score = 0;
@@ -28,11 +26,12 @@ public class Player {
     transient private List<Kill> frags = Lists.newArrayList();
     transient private List<Kill> deaths = Lists.newArrayList();
     transient private List<Kill> suicides = Lists.newArrayList();
-    transient private Map<MeanOfDeath, Weapons> weapons = Maps.newTreeMap();
+    transient private Map<MeanOfDeath, WeaponKill> weaponKills = Maps.newHashMap();
+    transient private Map<Player, PlayerKill> playerKills = Maps.newHashMap();
 
     public Player() {
         for (MeanOfDeath meanOfDeath : MeanOfDeath.values()) {
-            weapons.put(meanOfDeath, new Weapons(meanOfDeath));
+            weaponKills.put(meanOfDeath, new WeaponKill(meanOfDeath));
         }
     }
 
@@ -53,7 +52,7 @@ public class Player {
             frags.add(kill);
 
             // Stats
-            weapons.get(kill.getMeanOfDeath()).addFrag();
+            weaponKills.get(kill.getMeanOfDeath()).addFrag();
         }
 
         // Flag update
@@ -156,17 +155,30 @@ public class Player {
         this.suicides = suicides;
     }
 
-    public Map<MeanOfDeath, Weapons> getWeapons() {
-        return weapons;
+    public Map<MeanOfDeath, WeaponKill> getWeaponKills() {
+        return weaponKills;
     }
 
-    public List<Weapons> getSortedWeapons() {
+    public List<WeaponKill> getSortedWeaponKills() {
         // Special, sort it before
-        return Ordering.natural().immutableSortedCopy(weapons.values());
+        return Ordering.natural().immutableSortedCopy(weaponKills.values());
     }
 
-    public void setWeapons(Map<MeanOfDeath, Weapons> weapons) {
-        this.weapons = weapons;
+    public void setWeaponKills(Map<MeanOfDeath, WeaponKill> weaponKills) {
+        this.weaponKills = weaponKills;
+    }
+
+    public Map<Player, PlayerKill> getPlayerKills() {
+        return playerKills;
+    }
+
+    public void setPlayerKills(Map<Player, PlayerKill> playerKills) {
+        this.playerKills = playerKills;
+    }
+
+    @Override
+    public int compareTo(Player player) {
+        return player.getName().compareTo(name);
     }
 
     @Override

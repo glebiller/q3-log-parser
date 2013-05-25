@@ -1,4 +1,4 @@
-package fr.kissy.q3logparser.dto;
+package fr.kissy.q3logparser.dto.kill;
 
 import com.google.common.base.Objects;
 import fr.kissy.q3logparser.dto.enums.MeanOfDeath;
@@ -8,11 +8,11 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 /**
  * @author Guillaume <lebiller@fullsix.com>
  */
-public class Weapons implements Comparable<Weapons> {
+public class WeaponKill implements Comparable<WeaponKill> {
     private MeanOfDeath meanOfDeath;
     private Integer frags = 0;
 
-    public Weapons(MeanOfDeath meanOfDeath) {
+    public WeaponKill(MeanOfDeath meanOfDeath) {
         this.meanOfDeath = meanOfDeath;
     }
 
@@ -41,7 +41,7 @@ public class Weapons implements Comparable<Weapons> {
     }
 
     @Override
-    public int compareTo(Weapons weapons) {
+    public int compareTo(WeaponKill weapons) {
         return weapons.getFrags().compareTo(frags);
     }
 
@@ -52,8 +52,8 @@ public class Weapons implements Comparable<Weapons> {
 
     @Override
     public boolean equals(Object o) {
-        if(o instanceof Weapons){
-            final Weapons weapons = (Weapons) o;
+        if(o instanceof WeaponKill){
+            final WeaponKill weapons = (WeaponKill) o;
             return Objects.equal(meanOfDeath, weapons.meanOfDeath)
                     && Objects.equal(frags, weapons.frags);
         } else{

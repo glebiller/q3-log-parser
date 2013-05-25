@@ -121,7 +121,7 @@
                         <th>Frags</th>
                         <th>Percent</th>
                     </tr>
-                    <#list player.sortedWeapons as weapon>
+                    <#list player.sortedWeaponKills as weapon>
                         <#if weapon.frags != 0>
                             <tr class="force-center">
                                 <td>${weapon.meanOfDeathName}</td>

@@ -1,4 +1,4 @@
-package fr.kissy.q3logparser.dto.funnel;
+package fr.kissy.q3logparser.funnel;
 
 import com.google.common.hash.Funnel;
 import com.google.common.hash.PrimitiveSink;
