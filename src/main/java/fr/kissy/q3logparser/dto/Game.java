@@ -3,9 +3,11 @@ package fr.kissy.q3logparser.dto;
 import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.hash.Hashing;
 import fr.kissy.q3logparser.dto.enums.GameType;
 import fr.kissy.q3logparser.dto.enums.MeanOfDeath;
 import fr.kissy.q3logparser.dto.enums.Team;
+import fr.kissy.q3logparser.dto.funnel.GameFunnel;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -27,7 +29,8 @@ public class Game {
     private String map;
     private Integer duration;
     private Map<Integer, Player> players = Maps.newHashMap();
-    private Set<Team> pickedUpFlags = Sets.newHashSet();
+
+    transient private Set<Team> pickedUpFlags = Sets.newHashSet();
 
     public Game(GameType gameType, String mapname) {
         this.type = gameType;
@@ -97,7 +100,7 @@ public class Game {
             Template template = configuration.getTemplate("src/main/resources/fr/kissy/q3logparser/results.ftl");
             Map<String, Object> data = Maps.newHashMap();
             data.put("game", this);
-            Writer file = new FileWriter(new File("target/results.html"));
+            Writer file = new FileWriter(new File("target/" + Hashing.md5().hashObject(this, GameFunnel.INSTANCE) + ".html"));
             template.process(data, file);
             file.flush();
             file.close();
