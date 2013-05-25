@@ -15,15 +15,20 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.Writer;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Guillaume <lebiller@fullsix.com>
  */
 public class Game {
     private static final Integer WORLD_NUMBER = 1022;
+    private static final Configuration FREEMARKER_CONFIGURATION = new Configuration();
+    private static final String GAME_TEMPLATE_PATH = "src/main/resources/fr/kissy/q3logparser/results.ftl";
 
     private GameType type;
     private String map;
@@ -33,7 +38,7 @@ public class Game {
 
     transient private Set<Team> pickedUpFlags = Sets.newHashSet();
 
-    public Game(GameType gameType, String mapname) {
+    public Game(GameType gameType, String mapname) throws IOException {
         this.type = gameType;
         this.map = mapname;
     }
@@ -102,12 +107,9 @@ public class Game {
         this.duration = time;
         try {
             //System.out.println(this);
-            Configuration configuration = new Configuration();
-            Template template = configuration.getTemplate("src/main/resources/fr/kissy/q3logparser/results.ftl");
-            Map<String, Object> data = Maps.newHashMap();
-            data.put("game", this);
+            Map<String, Game> data = Collections.singletonMap("game", this);
             Writer file = new FileWriter(new File("target/" + Hashing.md5().hashObject(this, GameFunnel.INSTANCE) + ".html"));
-            template.process(data, file);
+            FREEMARKER_CONFIGURATION.getTemplate(GAME_TEMPLATE_PATH).process(data, file);
             file.flush();
             file.close();
         } catch (Exception e) {
@@ -137,6 +139,11 @@ public class Game {
 
     public Integer getDuration() {
         return duration;
+    }
+
+    public String getFormattedDuration() {
+        long minutes = TimeUnit.SECONDS.toMinutes(duration);
+        return String.format("%dm %ds",minutes, TimeUnit.SECONDS.toSeconds(duration) - TimeUnit.MINUTES.toSeconds(minutes));
     }
 
     public void setDuration(Integer duration) {

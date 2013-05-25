@@ -48,7 +48,11 @@
 
 <div class="container">
     <h1 class="align-team-score">[${game.typeName}] ${game.map}
-        <small><span class="label label-important">R</span> ${game.redTeamScore} - <span class="label label-info">B</span> ${game.blueTeamScore}</small>
+        <small>
+            <span class="label label">D</span> ${game.formattedDuration} -
+            <span class="label label-important">R</span> ${game.redTeamScore} -
+            <span class="label label-info">B</span> ${game.blueTeamScore}
+        </small>
     </h1>
     <table class="table table-bordered" id="game-results">
         <thead>

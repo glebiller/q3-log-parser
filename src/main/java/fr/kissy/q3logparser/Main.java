@@ -55,7 +55,7 @@ public class Main {
             }
 
             currentTime = currentTime == null ? DateUtils.parseDate(matcher.group(1), "m:s").getTime() : currentTime;
-            Integer time = Long.valueOf(DateUtils.parseDate(matcher.group(1), "m:s").getTime() - currentTime).intValue();
+            Integer time = Long.valueOf(DateUtils.parseDate(matcher.group(1), "m:s").getTime() - currentTime).intValue() / 1000;
             try {
                 MethodUtils.invokeExactMethod(this, "process" + matcher.group(2), new Object[] {time, matcher.group(3)});
             } catch (NoSuchMethodException e) {
@@ -64,7 +64,7 @@ public class Main {
         }
     }
 
-    public void processInitGame(Integer time, String data) {
+    public void processInitGame(Integer time, String data) throws IOException {
         //System.out.println("InitGame: " + data);
         Queue<String> rawParams = Queues.newArrayDeque(Lists.newArrayList(data.split("\\\\")));
         Map<String, String> params = Maps.newHashMap();
