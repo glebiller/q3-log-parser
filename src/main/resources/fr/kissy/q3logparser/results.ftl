@@ -8,11 +8,7 @@
     <!-- Le styles -->
     <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
     <style type="text/css">
-        .force-center,
-        .force-center td,
-        .force-center th {
-            text-align: center !important;
-        }
+        <#include "results.css.ftl">
     </style>
 
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -21,7 +17,11 @@
 
     <![endif]-->
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/datatables/1.9.4/jquery.dataTables.min.js"></script>
     <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        <#include "results.js.ftl">
+    </script>
 </head>
 
 <body>
@@ -49,7 +49,8 @@
 <div class="container">
 
     <h1>[${game.typeName}] ${game.map}</h1>
-    <table class="table table-bordered">
+    <table class="table table-bordered" id="game-results">
+        <thead>
         <tr class="force-center">
             <th colspan="3">Player</th>
             <th colspan="5">Stats</th>
@@ -72,6 +73,8 @@
             <th>Returned</th>
             <th>Efficiency</th>
         </tr>
+        </thead>
+        <tbody>
         <#list game.players?values as player>
             <#assign statsEfficiency = player.frags?size / (1 + player.frags?size + player.deaths?size)>
             <#assign flagEfficiency = player.flag.returned / (1 + player.flag.returned + player.flag.pickedUp - player.flag.captured)>
@@ -92,6 +95,7 @@
                 <td><span class="badge badge-warning">${flagEfficiency} %</span></td>
             </tr>
         </#list>
+        </tbody>
     </table>
 
     <#list game.players?values as player>
