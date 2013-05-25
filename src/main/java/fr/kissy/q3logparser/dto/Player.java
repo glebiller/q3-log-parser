@@ -16,6 +16,7 @@ import java.util.Map;
  * @author Guillaume <lebiller@fullsix.com>
  */
 public class Player implements Comparable<Player> {
+    private Integer id = null;
     private Team team = null;
     private String name = null;
     private Integer score = 0;
@@ -29,13 +30,8 @@ public class Player implements Comparable<Player> {
     transient private Map<MeanOfDeath, WeaponKill> weaponKills = Maps.newHashMap();
     transient private Map<Player, PlayerKill> playerKills = Maps.newHashMap();
 
-    public Player() {
-        for (MeanOfDeath meanOfDeath : MeanOfDeath.values()) {
-            weaponKills.put(meanOfDeath, new WeaponKill(meanOfDeath));
-        }
-    }
-
-    public void update(String name, Integer teamNumber) {
+    public void update(Integer playerNumber, String name, Integer teamNumber) {
+        this.id = playerNumber;
         this.name = name;
         this.team = Team.values()[teamNumber];
     }
@@ -52,7 +48,14 @@ public class Player implements Comparable<Player> {
             frags.add(kill);
 
             // Stats
+            if (!weaponKills.containsKey(kill.getMeanOfDeath())) {
+                weaponKills.put(kill.getMeanOfDeath(), new WeaponKill(kill.getMeanOfDeath()));
+            }
             weaponKills.get(kill.getMeanOfDeath()).addFrag();
+            if (!playerKills.containsKey(kill.getTarget())) {
+                 playerKills.put(kill.getTarget(), new PlayerKill(kill.getTarget()));
+            }
+            playerKills.get(kill.getTarget()).addFrag();
         }
 
         // Flag update
@@ -73,6 +76,14 @@ public class Player implements Comparable<Player> {
 
     public void returnFlag() {
         this.flag.addReturned();
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public Team getTeam() {
@@ -172,6 +183,11 @@ public class Player implements Comparable<Player> {
         return playerKills;
     }
 
+    public List<PlayerKill> getSortedPlayerKills() {
+        // Special, sort it before
+        return Ordering.natural().immutableSortedCopy(playerKills.values());
+    }
+
     public void setPlayerKills(Map<Player, PlayerKill> playerKills) {
         this.playerKills = playerKills;
     }
@@ -190,11 +206,7 @@ public class Player implements Comparable<Player> {
     public boolean equals(Object o) {
         if(o instanceof Player){
             final Player player = (Player) o;
-            return Objects.equal(team, player.team)
-                    && Objects.equal(name, player.name)
-                    && Objects.equal(score, player.score)
-                    && Objects.equal(streak, player.streak)
-                    && Objects.equal(flag, player.flag);
+            return Objects.equal(id, player.id);
         } else{
             return false;
         }
@@ -202,6 +214,6 @@ public class Player implements Comparable<Player> {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(team, name, score, streak, flag);
+        return Objects.hashCode(id);
     }
 }

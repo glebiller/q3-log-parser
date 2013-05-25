@@ -47,7 +47,7 @@ public class Game {
     }
 
     public void processClientUserInfoChanged(Integer playerNumber, String name, Integer teamNumber) {
-        players.get(playerNumber).update(name, teamNumber);
+        players.get(playerNumber).update(playerNumber, name, teamNumber);
     }
 
     public void processKill(Integer time, Integer playerNumber, Integer targetNumber, MeanOfDeath meanOfDeath) {

@@ -121,12 +121,29 @@
                         <th>Frags</th>
                         <th>Percent</th>
                     </tr>
-                    <#list player.sortedWeaponKills as weapon>
-                        <#if weapon.frags != 0>
+                    <#list player.sortedWeaponKills as weaponKill>
+                        <#if weaponKill.frags != 0>
                             <tr class="force-center">
-                                <td>${weapon.meanOfDeathName}</td>
-                                <td><span class="badge badge-inverse">${weapon.frags}</span></td>
-                                <td><span class="badge badge-inverse">${100 * weapon.frags / player.frags?size} %</span></td>
+                                <td>${weaponKill.meanOfDeathName}</td>
+                                <td><span class="badge badge-inverse">${weaponKill.frags}</span></td>
+                                <td><span class="badge badge-inverse">${100 * weaponKill.frags / player.frags?size} %</span></td>
+                            </tr>
+                        </#if>
+                    </#list>
+                </table>
+                <h4>Players details</h4>
+                <table class="table table-bordered">
+                    <tr class="force-center">
+                        <th>Player</th>
+                        <th>Frags</th>
+                        <th>Percent</th>
+                    </tr>
+                    <#list player.sortedPlayerKills as playerKill>
+                        <#if playerKill.frags != 0>
+                            <tr class="force-center">
+                                <td>${playerKill.player.name}</td>
+                                <td><span class="badge badge-inverse">${playerKill.frags}</span></td>
+                                <td><span class="badge badge-inverse">${100 * playerKill.frags / player.frags?size} %</span></td>
                             </tr>
                         </#if>
                     </#list>

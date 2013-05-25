@@ -1,6 +1,7 @@
 package fr.kissy.q3logparser.dto.kill;
 
 import com.google.common.base.Objects;
+import fr.kissy.q3logparser.dto.Player;
 import fr.kissy.q3logparser.dto.enums.MeanOfDeath;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -9,27 +10,23 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * @author Guillaume <lebiller@fullsix.com>
  */
 public class PlayerKill implements Comparable<PlayerKill> {
-    private MeanOfDeath meanOfDeath;
+    private Player player;
     private Integer frags = 0;
 
-    public PlayerKill(MeanOfDeath meanOfDeath) {
-        this.meanOfDeath = meanOfDeath;
+    public PlayerKill(Player player) {
+        this.player = player;
     }
 
     public void addFrag() {
         ++this.frags;
     }
 
-    public MeanOfDeath getMeanOfDeath() {
-        return meanOfDeath;
+    public Player getPlayer() {
+        return player;
     }
 
-    public String getMeanOfDeathName() {
-        return meanOfDeath.getName();
-    }
-
-    public void setMeanOfDeath(MeanOfDeath meanOfDeath) {
-        this.meanOfDeath = meanOfDeath;
+    public void setPlayer(Player player) {
+        this.player = player;
     }
 
     public Integer getFrags() {
@@ -53,9 +50,9 @@ public class PlayerKill implements Comparable<PlayerKill> {
     @Override
     public boolean equals(Object o) {
         if(o instanceof PlayerKill){
-            final PlayerKill weapons = (PlayerKill) o;
-            return Objects.equal(meanOfDeath, weapons.meanOfDeath)
-                    && Objects.equal(frags, weapons.frags);
+            final PlayerKill playerKill = (PlayerKill) o;
+            return Objects.equal(player, playerKill.player)
+                    && Objects.equal(frags, playerKill.frags);
         } else{
             return false;
         }
@@ -63,6 +60,6 @@ public class PlayerKill implements Comparable<PlayerKill> {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(meanOfDeath, frags);
+        return Objects.hashCode(player, frags);
     }
 }

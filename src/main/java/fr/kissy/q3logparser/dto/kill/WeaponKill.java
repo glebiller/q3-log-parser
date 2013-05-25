@@ -53,9 +53,9 @@ public class WeaponKill implements Comparable<WeaponKill> {
     @Override
     public boolean equals(Object o) {
         if(o instanceof WeaponKill){
-            final WeaponKill weapons = (WeaponKill) o;
-            return Objects.equal(meanOfDeath, weapons.meanOfDeath)
-                    && Objects.equal(frags, weapons.frags);
+            final WeaponKill weaponKill = (WeaponKill) o;
+            return Objects.equal(meanOfDeath, weaponKill.meanOfDeath)
+                    && Objects.equal(frags, weaponKill.frags);
         } else{
             return false;
         }
