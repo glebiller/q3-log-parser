@@ -1,5 +1,6 @@
 package fr.kissy.q3logparser.dto;
 
+import com.google.common.base.Objects;
 import fr.kissy.q3logparser.dto.enums.MeanOfDeath;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -40,18 +41,8 @@ public class Weapons implements Comparable<Weapons> {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Weapons weapons = (Weapons) o;
-        return meanOfDeath == weapons.meanOfDeath;
-
-    }
-
-    @Override
-    public int hashCode() {
-        return meanOfDeath.hashCode();
+    public int compareTo(Weapons weapons) {
+        return weapons.getFrags().compareTo(frags);
     }
 
     @Override
@@ -60,7 +51,18 @@ public class Weapons implements Comparable<Weapons> {
     }
 
     @Override
-    public int compareTo(Weapons weapons) {
-        return weapons.getFrags().compareTo(frags);
+    public boolean equals(Object o) {
+        if(o instanceof Weapons){
+            final Weapons weapons = (Weapons) o;
+            return Objects.equal(meanOfDeath, weapons.meanOfDeath)
+                    && Objects.equal(frags, weapons.frags);
+        } else{
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(meanOfDeath, frags);
     }
 }

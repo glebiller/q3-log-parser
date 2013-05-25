@@ -1,5 +1,6 @@
 package fr.kissy.q3logparser.dto;
 
+import com.google.common.base.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -51,5 +52,22 @@ public class Flag {
     @Override
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(o instanceof Flag){
+            final Flag streak = (Flag) o;
+            return Objects.equal(captured, streak.captured)
+                    && Objects.equal(pickedUp, streak.pickedUp)
+                    && Objects.equal(returned, streak.returned);
+        } else{
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(captured, pickedUp, returned);
     }
 }

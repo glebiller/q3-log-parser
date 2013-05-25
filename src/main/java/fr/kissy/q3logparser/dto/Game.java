@@ -1,5 +1,6 @@
 package fr.kissy.q3logparser.dto;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import fr.kissy.q3logparser.dto.enums.GameType;
@@ -42,7 +43,7 @@ public class Game {
     }
 
     public void processKill(Integer time, Integer playerNumber, Integer targetNumber, MeanOfDeath meanOfDeath) {
-        if (WORLD_NUMBER.equals(playerNumber)) {
+        if (Objects.equal(WORLD_NUMBER, playerNumber)) {
             playerNumber = targetNumber;
         }
 
@@ -152,5 +153,23 @@ public class Game {
     @Override
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SIMPLE_STYLE);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(o instanceof Game){
+            final Game game = (Game) o;
+            return Objects.equal(type, game.type)
+                    && Objects.equal(map, game.map)
+                    && Objects.equal(duration, game.duration)
+                    && Objects.equal(players, game.players);
+        } else{
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(type, map, duration, players);
     }
 }

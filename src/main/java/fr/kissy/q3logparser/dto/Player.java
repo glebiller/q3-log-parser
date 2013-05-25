@@ -1,6 +1,7 @@
 package fr.kissy.q3logparser.dto;
 
 import com.google.common.base.Functions;
+import com.google.common.base.Objects;
 import com.google.common.collect.*;
 import fr.kissy.q3logparser.dto.enums.MeanOfDeath;
 import fr.kissy.q3logparser.dto.enums.Team;
@@ -19,13 +20,11 @@ import java.util.regex.Matcher;
 public class Player {
     private Team team = null;
     private String name = null;
-    private Boolean hasFlag = false;
-
     private Integer score = 0;
-
     private Streak streak = new Streak();
     private Flag flag = new Flag();
 
+    transient private Boolean hasFlag = false;
     transient private List<Kill> frags = Lists.newArrayList();
     transient private List<Kill> deaths = Lists.newArrayList();
     transient private List<Kill> suicides = Lists.newArrayList();
@@ -43,13 +42,13 @@ public class Player {
     }
 
     public void addKill(Kill kill) {
-        if (kill.getTarget().equals(this)) {
+        if (Objects.equal(kill.getTarget(), this)) {
             streak.addDeath();
             deaths.add(kill);
             if (kill.isSuicide()) {
                 suicides.add(kill);
             }
-        } else if (kill.getPlayer().equals(this)) {
+        } else if (Objects.equal(kill.getPlayer(), this)) {
             streak.addFrag();
             frags.add(kill);
 
@@ -58,7 +57,7 @@ public class Player {
         }
 
         // Flag update
-        if (kill.getTarget().equals(this) && hasFlag) {
+        if (Objects.equal(kill.getTarget(), this) && hasFlag) {
             this.hasFlag = false;
         }
     }
@@ -101,14 +100,6 @@ public class Player {
         this.name = name;
     }
 
-    public Boolean getHasFlag() {
-        return hasFlag;
-    }
-
-    public void setHasFlag(Boolean hasFlag) {
-        this.hasFlag = hasFlag;
-    }
-
     public Integer getScore() {
         return score;
     }
@@ -131,6 +122,14 @@ public class Player {
 
     public void setFlag(Flag flag) {
         this.flag = flag;
+    }
+
+    public Boolean getHasFlag() {
+        return hasFlag;
+    }
+
+    public void setHasFlag(Boolean hasFlag) {
+        this.hasFlag = hasFlag;
     }
 
     public List<Kill> getFrags() {
@@ -171,21 +170,26 @@ public class Player {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public String toString() {
+        return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE, null, null, false, false).toString();
+    }
 
-        Player player = (Player) o;
-        return name.equals(player.name);
+    @Override
+    public boolean equals(Object o) {
+        if(o instanceof Player){
+            final Player player = (Player) o;
+            return Objects.equal(team, player.team)
+                    && Objects.equal(name, player.name)
+                    && Objects.equal(score, player.score)
+                    && Objects.equal(streak, player.streak)
+                    && Objects.equal(flag, player.flag);
+        } else{
+            return false;
+        }
     }
 
     @Override
     public int hashCode() {
-        return name.hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE, null, null, false, false).toString();
+        return Objects.hashCode(team, name, score, streak, flag);
     }
 }

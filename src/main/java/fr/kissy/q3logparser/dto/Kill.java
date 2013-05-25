@@ -1,5 +1,6 @@
 package fr.kissy.q3logparser.dto;
 
+import com.google.common.base.Objects;
 import fr.kissy.q3logparser.dto.enums.MeanOfDeath;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -21,7 +22,7 @@ public class Kill {
     }
 
     public boolean isSuicide() {
-        return player.equals(target);
+        return Objects.equal(player.getName(), target.getName());
     }
 
     public Player getPlayer() {
@@ -59,5 +60,23 @@ public class Kill {
     @Override
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SIMPLE_STYLE);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(o instanceof Kill){
+            final Kill kill = (Kill) o;
+            return Objects.equal(player, kill.player)
+                    && Objects.equal(target, kill.target)
+                    && Objects.equal(time, kill.time)
+                    && Objects.equal(meanOfDeath, kill.meanOfDeath);
+        } else{
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(player, target, time, meanOfDeath);
     }
 }
