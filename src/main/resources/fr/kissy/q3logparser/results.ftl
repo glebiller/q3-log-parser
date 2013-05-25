@@ -54,21 +54,23 @@
             <span class="label label-info">B</span> ${game.blueTeamScore}
         </small>
     </h1>
-    <table class="table table-bordered" id="game-results">
+    <table class="table table-condensed table-bordered" id="game-results">
         <thead>
         <tr class="force-center">
-            <th colspan="2">Player</th>
-            <th colspan="5">Stats</th>
+            <th colspan="3">Player</th>
+            <th colspan="6">Stats</th>
             <th colspan="2">Streak</th>
-            <th colspan="3">Flag</th>
+            <th colspan="3">Flags</th>
         </tr>
-        <tr class="force-center">
+        <tr class="force-center sub-column">
+            <th>T</th>
             <th>Name</th>
             <th>Efficiency</th>
             <th>Score</th>
             <th>Frags</th>
+            <th>FPM</th>
             <th>Deaths</th>
-            <th>Suicides</th>
+            <th>Lifetime</th>
             <th>Efficiency</th>
             <th>Frags</th>
             <th>Deaths</th>
@@ -83,16 +85,16 @@
             <#assign statsEfficiency = (100 * player.frags?size / (1 + player.frags?size + player.deaths?size))>
             <#assign flagEfficiency = (100 * (player.flag.returned + player.flag.captured) / (1 + player.flag.returned + player.flag.captured + player.flag.pickedUp))>
             <tr class="force-center">
+                <td><span class="label label-${player.teamCssClass}">${player.teamName}</span></td>
                 <td class="force-left">
-                    <span class="label label-${player.teamCssClass}">${player.teamName}</span>
-                    <a href="#modal_${player_index}" data-toggle="modal">${player.name}
-                    </a>
+                    <a href="#modal_${player_index}" data-toggle="modal">${player.name}</a>
                 </td>
                 <td><span class="badge">${((statsEfficiency + flagEfficiency) / 2)?string("0.#")} %</span></td>
                 <td><span class="badge badge-inverse">${player.score}</span></td>
                 <td><span class="badge badge-inverse">${player.frags?size}</span></td>
-                <td><span class="badge badge-inverse">${player.deaths?size}</span></td>
-                <td><span class="badge badge-inverse">${player.suicides?size}</span></td>
+                <td><span class="badge badge-inverse">${(60 * player.frags?size / game.duration)?string("0.##")}</span></td>
+                <td><span class="badge badge-inverse">${player.deaths?size} (${player.suicides?size})</span></td>
+                <td><span class="badge badge-inverse">${(game.duration / player.deaths?size)?round}s</span></td>
                 <td><span class="badge badge-inverse">${statsEfficiency?string("0.#")} %</span></td>
                 <td><span class="badge badge-success">${player.streak.frag}</span></td>
                 <td><span class="badge badge-success">${player.streak.death}</span></td>

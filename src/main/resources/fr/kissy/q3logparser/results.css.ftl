@@ -4,6 +4,10 @@
  td.dataTables_empty {
     text-align: center !important;
 }
+.sub-column th {
+    font-size: 12px;
+    line-height: 12px;
+}
 tr td.force-left {
     text-align: left !important;
 }
