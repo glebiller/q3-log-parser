@@ -1,1 +1,1 @@
-[${game.typeName}] ${game.map} <small><span class="label label">D</span> ${game.formattedDuration} - <span class="label label-important">R</span> ${game.redTeamScore} - <span class="label label-info">B</span> ${game.blueTeamScore}</small>
+[${game.typeName}] ${game.map} <small><span class="label label">D</span> ${game.formattedDuration}<#if game.displayTeamInfos> - <span class="label label-important">R</span> ${game.redTeamScore} - <span class="label label-info">B</span> ${game.blueTeamScore}</#if></small>

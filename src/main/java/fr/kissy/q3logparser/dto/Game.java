@@ -139,6 +139,14 @@ public class Game {
         return type.getName();
     }
 
+    public Boolean getDisplayFlagInfos() {
+        return type == GameType.CAPTURE_THE_FLAG;
+    }
+
+    public Boolean getDisplayTeamInfos() {
+        return type == GameType.CAPTURE_THE_FLAG || type == GameType.TEAM_DEATHMATCH;
+    }
+
     public void setType(GameType type) {
         this.type = type;
     }
