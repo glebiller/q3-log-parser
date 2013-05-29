@@ -3,20 +3,13 @@ package fr.kissy.q3logparser.dto;
 import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.google.common.hash.Hashing;
 import fr.kissy.q3logparser.dto.enums.GameType;
 import fr.kissy.q3logparser.dto.enums.MeanOfDeath;
 import fr.kissy.q3logparser.dto.enums.Team;
-import fr.kissy.q3logparser.funnel.GameFunnel;
-import freemarker.template.Configuration;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -33,11 +26,14 @@ public class Game {
     private Map<Integer, Player> players = Maps.newHashMap();
     private Map<Team, Integer> teamScore = Maps.newHashMap();
 
+    transient private Set<Team> carriedFlags = Sets.newHashSet();
     transient private Set<Team> pickedUpFlags = Sets.newHashSet();
 
     public Game(GameType gameType, String mapName) throws IOException {
         this.type = gameType;
         this.map = mapName;
+        this.teamScore.put(Team.TEAM_RED, 0);
+        this.teamScore.put(Team.TEAM_BLUE, 0);
     }
 
     public void processClientConnect(Integer playerNumber) {
@@ -56,22 +52,33 @@ public class Game {
         Player player = players.get(playerNumber);
         Player target = players.get(targetNumber);
 
+        boolean targetHadFlag = target.getHasFlag();
+
         // Kill
         player.addKill(new Kill(player, target, time, meanOfDeath));
         target.addKill(new Kill(player, target, time, meanOfDeath));
 
         // Remove pickedUpFlags if needed
-        if (target.getHasFlag()) {
-            pickedUpFlags.remove(player.getTeam());
+        if (targetHadFlag) {
+            Team oppositeTeam = target.getTeam().getOpposite();
+            carriedFlags.remove(oppositeTeam);
+            if (meanOfDeath == MeanOfDeath.MOD_FALLING) {
+                pickedUpFlags.remove(oppositeTeam);
+            }
         }
     }
 
     public void processItemFlag(Integer playerNumber, Team team) {
         Player player = players.get(playerNumber);
-        if (player.getTeam() != team) {
+        if (player.getTeam().getOpposite() == team) {
+            if (carriedFlags.contains(team)) {
+                handleLostFlag(player.getTeam().getOpposite());
+            }
             if (!player.getHasFlag()) {
                 // Pickup
+                System.out.println("Pickedup: " + player.getName() + " " + player.getTeam());
                 player.pickupFlag();
+                carriedFlags.add(team);
                 pickedUpFlags.add(team);
             } else {
                 // ERROR
@@ -80,13 +87,33 @@ public class Game {
         } else {
             if (pickedUpFlags.contains(team)) {
                 // Return
+                System.out.println("Returned: " + player.getName() + " " + player.getTeam());
                 player.returnFlag();
                 pickedUpFlags.remove(team);
             } else {
                 // Capture
+                System.out.println("Captured: " + player.getName() + " " + player.getTeam());
                 player.captureFlag();
+                carriedFlags.clear();
                 pickedUpFlags.clear();
+                // Add one point
+                teamScore.put(team, teamScore.get(team) + 1);
             }
+        }
+    }
+
+    private void handleLostFlag(Team ignore) {
+        for (Player player : players.values()) {
+            if (!player.getHasFlag()) {
+                 continue;
+            }
+            // Ignore opposite team players
+            if (player.getTeam() == ignore) {
+                continue;
+            }
+            player.setHasFlag(false);
+            player.getFlag().setReturned(player.getFlag().getReturned() - 1);
+            player.getFlag().addCaptured();
         }
     }
 
@@ -159,6 +186,14 @@ public class Game {
 
     public Integer getBlueTeamScore() {
         return this.teamScore.get(Team.TEAM_BLUE);
+    }
+
+    public Set<Team> getCarriedFlags() {
+        return carriedFlags;
+    }
+
+    public void setCarriedFlags(Set<Team> carriedFlags) {
+        this.carriedFlags = carriedFlags;
     }
 
     public Set<Team> getPickedUpFlags() {

@@ -60,6 +60,7 @@ public class Player implements Comparable<Player> {
 
         // Flag update
         if (Objects.equal(kill.getTarget(), this) && hasFlag) {
+            System.out.println("Lost: " + name + " " + team);
             this.hasFlag = false;
         }
     }

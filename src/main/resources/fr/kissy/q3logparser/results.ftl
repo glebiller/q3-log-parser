@@ -42,7 +42,7 @@
                 <td><span class="badge badge-inverse">${player.frags?size}</span></td>
                 <td><span class="badge badge-inverse">${(60 * player.frags?size / game.duration)?string("0.##")}</span></td>
                 <td><span class="badge badge-inverse">${player.deaths?size} (${player.suicides?size})</span></td>
-                <td><span class="badge badge-inverse">${(game.duration / player.deaths?size)?round}s</span></td>
+                <td><span class="badge badge-inverse">${(game.duration / (1 + player.deaths?size))?round}s</span></td>
                 <td><span class="badge badge-inverse">${statsEfficiency?string("0.#")} %</span></td>
                 <td><span class="badge badge-success">${player.streak.frag}</span></td>
                 <td><span class="badge badge-success">${player.streak.death}</span></td>

@@ -38,7 +38,7 @@ public class Main {
 
     private static final Pattern LINE_PATTERN = Pattern.compile("^([0-9]{1,2}:[0-9]{2}) ([A-Za-z]+): ?(.*)$");
     private static final Pattern CLIENT_USER_INFO_CHANGED_DATA_PATTERN = Pattern.compile("^([0-9]{1,2}) n\\\\([^\\\\]+)\\\\t\\\\(\\d)(.*)$");
-    private static final Pattern KILL_DATA_PATTERN = Pattern.compile("^([0-9]{1,2}) ([0-9]{1,2}) ([0-9]{1,2}): (.*) killed (.*) by [^ ]*$");
+    private static final Pattern KILL_DATA_PATTERN = Pattern.compile("^([0-9]{1,4}) ([0-9]{1,2}) ([0-9]{1,2}): (.*) killed (.*) by [^ ]*$");
     private static final Pattern FLAG_RESULT_DATA_PATTERN = Pattern.compile("^([0-9]{1,2})  blue:([0-9]{1,2})$");
     private static final Pattern SCORE_DATA_PATTERN = Pattern.compile("^([0-9]{1,3})  ping: [0-9]{1,3}  client: ([0-9]{1,2}) (.*)$");
     private static final Pattern ITEM_DATA_PATTERN = Pattern.compile("^([0-9]{1,2}) team_CTF_(red|blue)flag$");

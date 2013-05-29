@@ -27,6 +27,17 @@ public enum Team {
         return cssClass;
     }
 
+    public Team getOpposite() {
+        switch (this) {
+            case TEAM_BLUE:
+                return TEAM_RED;
+            case TEAM_RED:
+                return TEAM_BLUE;
+            default:
+                return TEAM_FREE;
+        }
+    }
+
     public static Team fromFlagColor(String flagColor) {
         for (Team team : Team.values()) {
             if (StringUtils.containsIgnoreCase(team.name(), flagColor)) {
