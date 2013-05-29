@@ -17,7 +17,7 @@
 
     <![endif]-->
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/datatables/1.9.4/jquery.dataTables.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js"></script>
     <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
     <script type="text/javascript">
         <#include "results.js.ftl">
@@ -85,23 +85,39 @@
             <#assign statsEfficiency = (100 * player.frags?size / (1 + player.frags?size + player.deaths?size))>
             <#assign flagEfficiency = (100 * (player.flag.returned + player.flag.captured) / (1 + player.flag.returned + player.flag.captured + player.flag.pickedUp))>
             <tr class="force-center">
-                <td><span class="label label-${player.teamCssClass}">${player.teamName}</span></td>
+                <td><span class="label label${player.teamCssClass}">${player.teamName}</span></td>
                 <td class="force-left">
                     <a href="#modal_${player_index}" data-toggle="modal">${player.name}</a>
                 </td>
-                <td><span class="badge">${((statsEfficiency + flagEfficiency) / 2)?string("0.#")} %</span></td>
-                <td><span class="badge badge-inverse">${player.score}</span></td>
-                <td><span class="badge badge-inverse">${player.frags?size}</span></td>
-                <td><span class="badge badge-inverse">${(60 * player.frags?size / game.duration)?string("0.##")}</span></td>
-                <td><span class="badge badge-inverse">${player.deaths?size} (${player.suicides?size})</span></td>
-                <td><span class="badge badge-inverse">${(game.duration / player.deaths?size)?round}s</span></td>
-                <td><span class="badge badge-inverse">${statsEfficiency?string("0.#")} %</span></td>
-                <td><span class="badge badge-success">${player.streak.frag}</span></td>
-                <td><span class="badge badge-success">${player.streak.death}</span></td>
-                <td><span class="badge badge-warning">${player.flag.captured}</span></td>
-                <td><span class="badge badge-warning">${player.flag.pickedUp}</span></td>
-                <td><span class="badge badge-warning">${player.flag.returned}</span></td>
-                <td><span class="badge badge-warning">${flagEfficiency?string("0.#")} %</span></td>
+                <#if player.playing>
+                    <td><span class="badge badge${player.teamCssClass}">${((statsEfficiency + flagEfficiency) / 2)?string("0.#")} %</span></td>
+                    <td><span class="badge badge-inverse">${player.score}</span></td>
+                    <td><span class="badge badge-inverse">${player.frags?size}</span></td>
+                    <td><span class="badge badge-inverse">${(60 * player.frags?size / game.duration)?string("0.##")}</span></td>
+                    <td><span class="badge badge-inverse">${player.deaths?size} (${player.suicides?size})</span></td>
+                    <td><span class="badge badge-inverse">${(game.duration / (1 + player.deaths?size))?round}s</span></td>
+                    <td><span class="badge badge-inverse">${statsEfficiency?string("0.#")} %</span></td>
+                    <td><span class="badge badge-success">${player.streak.frag}</span></td>
+                    <td><span class="badge badge-success">${player.streak.death}</span></td>
+                    <td><span class="badge badge-warning">${player.flag.captured}</span></td>
+                    <td><span class="badge badge-warning">${player.flag.pickedUp}</span></td>
+                    <td><span class="badge badge-warning">${player.flag.returned}</span></td>
+                    <td><span class="badge badge-warning">${flagEfficiency?string("0.#")} %</span></td>
+                <#else>
+                    <td><span class="badge">-</span></td>
+                    <td><span class="badge">-</span></td>
+                    <td><span class="badge">-</span></td>
+                    <td><span class="badge">-</span></td>
+                    <td><span class="badge">-</span></td>
+                    <td><span class="badge">-</span></td>
+                    <td><span class="badge">-</span></td>
+                    <td><span class="badge">-</span></td>
+                    <td><span class="badge">-</span></td>
+                    <td><span class="badge">-</span></td>
+                    <td><span class="badge">-</span></td>
+                    <td><span class="badge">-</span></td>
+                    <td><span class="badge">-</span></td>
+                </#if>
             </tr>
         </#list>
         </tbody>

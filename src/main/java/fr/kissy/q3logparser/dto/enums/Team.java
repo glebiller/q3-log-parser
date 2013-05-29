@@ -6,10 +6,10 @@ import org.apache.commons.lang3.StringUtils;
  * @author Guillaume <lebiller@fullsix.com>
  */
 public enum Team {
-    TEAM_FREE("", ""),
-    TEAM_RED("R", "important"),
-    TEAM_BLUE("B", "info"),
-    TEAM_SPECTATOR("", "");
+    TEAM_FREE("F", ""),
+    TEAM_RED("R", "-important"),
+    TEAM_BLUE("B", "-info"),
+    TEAM_SPECTATOR("S", "");
 
     private final String name;
     private final String cssClass;
