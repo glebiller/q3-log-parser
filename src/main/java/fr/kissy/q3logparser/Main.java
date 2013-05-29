@@ -29,6 +29,8 @@ import java.util.regex.Pattern;
 public class Main {
 
     private static final String OUTPUT_DIRECTORY = "_data/";
+    private static final String OUTPUT_GAMES_DIRECTORY = OUTPUT_DIRECTORY + "games/";
+    private static final String OUTPUT_STATS_DIRECTORY = OUTPUT_DIRECTORY + "stats/";
     private static final Configuration FREEMARKER_CONFIGURATION = new Configuration();
     private static final String TITLE_TEMPLATE_PATH = "src/main/resources/fr/kissy/q3logparser/includes/title.ftl";
     private static final String GAME_TEMPLATE_PATH = "src/main/resources/fr/kissy/q3logparser/results.ftl";
@@ -62,6 +64,14 @@ public class Main {
             gamesFile.getParentFile().mkdirs();
             gamesFile.createNewFile();
         }
+        File gameOutputDirectory = new File(OUTPUT_GAMES_DIRECTORY);
+        if (!gameOutputDirectory.exists()) {
+            gameOutputDirectory.mkdirs();
+        }
+        File statsOutputDirectory = new File(OUTPUT_STATS_DIRECTORY);
+        if (!statsOutputDirectory.exists()) {
+            statsOutputDirectory.mkdirs();
+        }
     }
 
     private void processGames() throws IOException, IllegalAccessException, InvocationTargetException, ParseException {
@@ -85,7 +95,7 @@ public class Main {
 
     private void generateIndex() throws IOException, TemplateException {
         Object templateData = Collections.singletonMap("games", gamesProperties);
-        FileWriter fileWriter = new FileWriter(new File(OUTPUT_DIRECTORY + "index.html"));
+        FileWriter fileWriter = new FileWriter(new File(OUTPUT_GAMES_DIRECTORY + "index.html"));
         FREEMARKER_CONFIGURATION.getTemplate(INDEX_TEMPLATE_PATH).process(templateData, fileWriter);
         fileWriter.close();
     }
@@ -191,7 +201,7 @@ public class Main {
         FREEMARKER_CONFIGURATION.getTemplate(TITLE_TEMPLATE_PATH).process(templateData, stringWriter);
         gamesProperties.put(gameHash, stringWriter.toString());
 
-        FileWriter fileWriter = new FileWriter(new File(OUTPUT_DIRECTORY + gameHash + ".html"));
+        FileWriter fileWriter = new FileWriter(new File(OUTPUT_GAMES_DIRECTORY + gameHash + ".html"));
         FREEMARKER_CONFIGURATION.getTemplate(GAME_TEMPLATE_PATH).process(templateData, fileWriter);
         fileWriter.close();
     }
