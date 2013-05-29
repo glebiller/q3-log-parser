@@ -26,8 +26,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class Game {
     private static final Integer WORLD_NUMBER = 1022;
-    private static final Configuration FREEMARKER_CONFIGURATION = new Configuration();
-    private static final String GAME_TEMPLATE_PATH = "src/main/resources/fr/kissy/q3logparser/results.ftl";
 
     private GameType type;
     private String map;
@@ -37,9 +35,9 @@ public class Game {
 
     transient private Set<Team> pickedUpFlags = Sets.newHashSet();
 
-    public Game(GameType gameType, String mapname) throws IOException {
+    public Game(GameType gameType, String mapName) throws IOException {
         this.type = gameType;
-        this.map = mapname;
+        this.map = mapName;
     }
 
     public void processClientConnect(Integer playerNumber) {
@@ -104,16 +102,6 @@ public class Game {
 
     public void processShutdownGame(Integer time) {
         this.duration = time;
-        try {
-            //System.out.println(this);
-            Map<String, Game> data = Collections.singletonMap("game", this);
-            Writer file = new FileWriter(new File("target/" + Hashing.md5().hashObject(this, GameFunnel.INSTANCE) + ".html"));
-            FREEMARKER_CONFIGURATION.getTemplate(GAME_TEMPLATE_PATH).process(data, file);
-            file.flush();
-            file.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public GameType getType() {

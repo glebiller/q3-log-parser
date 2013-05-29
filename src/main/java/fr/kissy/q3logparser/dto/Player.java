@@ -102,10 +102,6 @@ public class Player implements Comparable<Player> {
         this.team = team;
     }
 
-    public Boolean getPlaying() {
-        return Team.TEAM_BLUE == team || Team.TEAM_RED == team;
-    }
-
     public String getName() {
         return name;
     }
