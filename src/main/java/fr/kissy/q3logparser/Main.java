@@ -193,6 +193,7 @@ public class Main {
 
         //System.out.println(currentGame);
         currentGame.processShutdownGame(time);
+        currentTime = null;
 
         Object templateData = Collections.singletonMap("game", currentGame);
         String gameHash = Hashing.md5().hashObject(currentGame, GameFunnel.INSTANCE).toString();
