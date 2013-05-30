@@ -54,9 +54,21 @@
                 </#if>
                 <td><span class="badge badge-inverse">${player.score}</span></td>
                 <td><span class="badge badge-inverse">${player.frags?size}</span></td>
-                <td><span class="badge badge-inverse">${(60 * player.frags?size / game.duration)?string("0.##")}</span></td>
+                <td><span class="badge badge-inverse">
+                    <#if game.duration == 0>
+                        -
+                    <#else>
+                        ${(60 * player.frags?size / game.duration)?string("0.##")}
+                    </#if>
+                </span></td>
                 <td><span class="badge badge-inverse">${player.deaths?size} (${player.suicides?size})</span></td>
-                <td><span class="badge badge-inverse">${(game.duration / (1 + player.deaths?size))?round}s</span></td>
+                <td><span class="badge badge-inverse">
+                    <#if player.deaths?size == 0>
+                        -
+                    <#else>
+                        ${(game.duration / player.deaths?size)?round}s
+                    </#if>
+                </span></td>
                 <td><span class="badge badge-inverse">${statsEfficiency?string("0.#")} %</span></td>
                 <td><span class="badge badge-success">${player.streak.frag}</span></td>
                 <td><span class="badge badge-success">${player.streak.death}</span></td>
@@ -90,7 +102,13 @@
                             <tr class="force-center">
                                 <td>${weaponKill.meanOfDeathName}</td>
                                 <td><span class="badge badge-inverse">${weaponKill.frags}</span></td>
-                                <td><span class="badge badge-inverse">${(100 * weaponKill.frags / player.frags?size)?string("0.##")} %</span></td>
+                                <td><span class="badge badge-inverse">
+                                    <#if player.frags?size == 0>
+                                        -
+                                    <#else>
+                                        ${(100 * weaponKill.frags / player.frags?size)?string("0.##")} %
+                                    </#if>
+                                </span></td>
                             </tr>
                         </#if>
                     </#list>
@@ -107,7 +125,13 @@
                             <tr class="force-center">
                                 <td>${playerKill.player.name}</td>
                                 <td><span class="badge badge-inverse">${playerKill.frags}</span></td>
-                                <td><span class="badge badge-inverse">${(100 * playerKill.frags / player.frags?size)?string("0.##")} %</span></td>
+                                <td><span class="badge badge-inverse">
+                                    <#if player.frags?size == 0>
+                                        -
+                                    <#else>
+                                        ${(100 * playerKill.frags / player.frags?size)?string("0.##")} %
+                                    </#if>
+                                </span></td>
                             </tr>
                         </#if>
                     </#list>
