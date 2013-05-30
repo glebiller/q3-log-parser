@@ -39,6 +39,10 @@
         <div class="container">
             <#nested/>
         </div>
+
+        <div class="container">
+            <hr />
+        </div>
     </body>
     </html>
 </#macro>

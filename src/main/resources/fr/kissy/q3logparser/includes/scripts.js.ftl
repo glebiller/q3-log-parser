@@ -28,4 +28,10 @@ $(document).ready(function() {
         ],
         "aaSorting": [[2, "desc"]]
     });
+    $('#games-list').dataTable({
+        "bPaginate": false,
+        "bFilter": true,
+        "bSort": true,
+        "aaSorting": [[0, "desc"]]
+    });
 });

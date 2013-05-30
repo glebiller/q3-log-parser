@@ -18,11 +18,8 @@ tr td.force-left {
 div.dataTables_filter label {
 	float: right;
 }
-table.table-games h4 small {
+table.table-games small {
     float: right;
-}
-table.table-games a {
-    margin-top: 5px;
 }
 table.table {
 	clear: both;

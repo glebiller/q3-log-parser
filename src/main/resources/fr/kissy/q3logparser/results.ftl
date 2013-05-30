@@ -1,7 +1,7 @@
 <#import "includes/template.ftl" as template>
 
 <@template.page>
-    <h1 class="align-team-score"><#include "includes/title.ftl"></h1>
+    <h1 class="align-team-score">[${game.typeName}] <#include "includes/title.ftl"></h1>
     <table class="table table-bordered" id="game-results">
         <thead>
         <tr class="force-center">

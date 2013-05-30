@@ -8,6 +8,7 @@ import fr.kissy.q3logparser.dto.Game;
 import fr.kissy.q3logparser.dto.enums.GameType;
 import fr.kissy.q3logparser.dto.enums.MeanOfDeath;
 import fr.kissy.q3logparser.dto.enums.Team;
+import fr.kissy.q3logparser.function.GamesPropertyValueTransformer;
 import fr.kissy.q3logparser.funnel.GameFunnel;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
@@ -15,6 +16,7 @@ import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.commons.lang3.time.FastDateFormat;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -54,7 +56,7 @@ public class Main {
     public static void main(String[] args) throws IOException, IllegalAccessException, InvocationTargetException, ParseException, TemplateException {
         Main main = new Main();
         main.processGames();
-        main.generateIndex();
+        main.generateGameIndex();
         main.saveGamesProperties();
     }
 
@@ -96,8 +98,10 @@ public class Main {
         }
     }
 
-    private void generateIndex() throws IOException, TemplateException {
-        Object templateData = Collections.singletonMap("games", gamesProperties);
+    private void generateGameIndex() throws IOException, TemplateException {
+        System.out.println("Generating game index");
+        Object templateData = Collections.singletonMap("games", Maps.transformValues(Maps.fromProperties(gamesProperties),
+                GamesPropertyValueTransformer.INSTANCE));
         FileWriter fileWriter = new FileWriter(new File(OUTPUT_GAMES_DIRECTORY + "index.html"));
         FREEMARKER_CONFIGURATION.getTemplate(INDEX_TEMPLATE_PATH).process(templateData, fileWriter);
         fileWriter.close();
@@ -201,10 +205,19 @@ public class Main {
             return;
         }
 
-        Object templateData = Collections.singletonMap("game", currentGame);
         String gameHash = Hashing.md5().hashObject(currentGame, GameFunnel.INSTANCE).toString();
+        if (gamesProperties.containsKey(gameHash)) {
+            // Do not process games twice.
+            return;
+        }
+
+        System.out.println("Generating game " + gameHash);
+        Object templateData = Collections.singletonMap("game", currentGame);
 
         StringWriter stringWriter = new StringWriter();
+        stringWriter.append(FastDateFormat.getDateInstance(FastDateFormat.MEDIUM).format(new Date()))
+                .append(GamesPropertyValueTransformer.GAME_PROPERTY_SEPARATOR).append(currentGame.getTypeName())
+                .append(GamesPropertyValueTransformer.GAME_PROPERTY_SEPARATOR);
         FREEMARKER_CONFIGURATION.getTemplate(TITLE_TEMPLATE_PATH).process(templateData, stringWriter);
         gamesProperties.put(gameHash, stringWriter.toString());
 
