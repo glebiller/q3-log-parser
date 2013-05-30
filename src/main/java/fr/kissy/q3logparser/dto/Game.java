@@ -76,7 +76,7 @@ public class Game {
             }
             if (!player.getHasFlag()) {
                 // Pickup
-                System.out.println("Pickedup: " + player.getName() + " " + player.getTeam());
+                //System.out.println("Pickedup: " + player.getName() + " " + player.getTeam());
                 player.pickupFlag();
                 carriedFlags.add(team);
                 pickedUpFlags.add(team);
@@ -87,12 +87,12 @@ public class Game {
         } else {
             if (pickedUpFlags.contains(team)) {
                 // Return
-                System.out.println("Returned: " + player.getName() + " " + player.getTeam());
+                //System.out.println("Returned: " + player.getName() + " " + player.getTeam());
                 player.returnFlag();
                 pickedUpFlags.remove(team);
             } else {
                 // Capture
-                System.out.println("Captured: " + player.getName() + " " + player.getTeam());
+                //System.out.println("Captured: " + player.getName() + " " + player.getTeam());
                 player.captureFlag();
                 carriedFlags.clear();
                 pickedUpFlags.clear();
