@@ -43,6 +43,9 @@ public class Main {
     private static final Pattern SCORE_DATA_PATTERN = Pattern.compile("^([0-9]{1,3})  ping: [0-9]{1,3}  client: ([0-9]{1,2}) (.*)$");
     private static final Pattern ITEM_DATA_PATTERN = Pattern.compile("^([0-9]{1,2}) team_CTF_(red|blue)flag$");
 
+    private static final Integer MIN_GAME_PLAYERS = 2;
+    private static final Integer MIN_GAME_DURATION = 300;
+
     private File gamesFile;
     private Properties gamesProperties;
     private Long currentTime;
@@ -187,13 +190,16 @@ public class Main {
     }
 
     public void processShutdownGame(Integer time, String data) throws IOException, TemplateException {
-        if (currentGame.getPlayers().size() < 2) {
-            return;
-        }
-
         //System.out.println(currentGame);
         currentGame.processShutdownGame(time);
         currentTime = null;
+
+        if (currentGame.getPlayers().size() < MIN_GAME_PLAYERS) {
+            return;
+        }
+        if (currentGame.getDuration() < MIN_GAME_DURATION) {
+            return;
+        }
 
         Object templateData = Collections.singletonMap("game", currentGame);
         String gameHash = Hashing.md5().hashObject(currentGame, GameFunnel.INSTANCE).toString();
