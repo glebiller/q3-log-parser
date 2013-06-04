@@ -215,7 +215,7 @@ public class Main {
         Object templateData = Collections.singletonMap("game", currentGame);
 
         StringWriter stringWriter = new StringWriter();
-        stringWriter.append(FastDateFormat.getDateInstance(FastDateFormat.MEDIUM).format(new Date()))
+        stringWriter.append(FastDateFormat.getDateInstance(FastDateFormat.SHORT).format(new Date()))
                 .append(GamesPropertyValueTransformer.GAME_PROPERTY_SEPARATOR).append(currentGame.getTypeName())
                 .append(GamesPropertyValueTransformer.GAME_PROPERTY_SEPARATOR);
         FREEMARKER_CONFIGURATION.getTemplate(TITLE_TEMPLATE_PATH).process(templateData, stringWriter);
