@@ -10,6 +10,12 @@ $.extend($.fn.dataTableExt.oSort, {
     },
     "html-badge-desc": function(x, y) {
         return parseFloat($(y).text()) - parseFloat($(x).text());
+    },
+    "short-date-asc": function(x, y) {
+        return parseInt(x.split('/').reverse().join(''), 10) - parseInt(y.split('/').reverse().join(''), 10);
+    },
+    "short-date-desc": function(x, y) {
+        return parseInt(y.split('/').reverse().join(''), 10) - parseInt(x.split('/').reverse().join(''), 10);
     }
 });
 $.extend($.fn.dataTableExt.ofnSearch, {
@@ -32,6 +38,9 @@ $(document).ready(function() {
         "bPaginate": false,
         "bFilter": true,
         "bSort": true,
+        "aoColumnDefs": [
+            {"sType": "short-date", "aTargets": [0]}
+        ],
         "aaSorting": [[0, "desc"]]
     });
 });
