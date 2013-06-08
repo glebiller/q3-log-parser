@@ -70,38 +70,56 @@ public class Main {
     private static final Integer MIN_GAME_PLAYERS = 2;
     private static final Integer MIN_GAME_DURATION = 300;
 
+    // Parameters
+    private File gamesLogFile;
+    private Boolean archive;
+    private Boolean regenerate;
+
+    // Properties
     private File dataPropertiesFile;
     private Properties dataProperties;
-    private File gamesLogFile;
     private File currentGameFile;
     private Long currentTime;
     private Game currentGame;
 
     public static void main(String[] args) throws IOException, IllegalAccessException, InvocationTargetException, ParseException, TemplateException {
-        if (args.length != 1) {
-            System.out.println("Usage \"java -jar q3-log-parser.jar [path/of/games/log]\"");
+        if (args.length < 1) {
+            System.out.println("Usage \"java -jar q3-log-parser.jar path/of/games/log [archive:true|false] [regenerate:true|false]\"");
             return;
         }
 
-        Main main = new Main(args[0]);
+        Main main = new Main(args);
         main.processGames();
         main.generateGameIndex();
+        main.processStats();
         main.saveAndArchive();
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public Main(String gamesLogPath) throws IOException {
+    public Main(String[] args) throws IOException {
+        // Parameters
+        gamesLogFile = new File(args[0]);
+        if (!gamesLogFile.exists()) {
+            throw new IllegalArgumentException("No log files found with path " + args[0]);
+        }
+        if (args.length >= 2) {
+            archive = Boolean.valueOf(args[1]);
+        } else {
+            archive = true;
+        }
+        if (args.length >= 3) {
+            regenerate = Boolean.valueOf(args[2]);
+        } else {
+            regenerate = false;
+        }
+
+        // Properties
         dataPropertiesFile = new File(OUTPUT_DATA_PROPERTY_FILE);
         dataProperties = new Properties();
         if (!dataPropertiesFile.exists()) {
             dataPropertiesFile.createNewFile();
         }
         dataProperties.load(new FileInputStream(dataPropertiesFile));
-
-        gamesLogFile = new File(gamesLogPath);
-        if (!gamesLogFile.exists()) {
-            throw new IllegalArgumentException("No log files found with path " + gamesLogPath);
-        }
 
         currentGameFile = new File(OUTPUT_CURRENT_GAME_FILE);
         currentGameFile.createNewFile();
@@ -142,24 +160,31 @@ public class Main {
     private void generateGameIndex() throws IOException, TemplateException {
         System.out.println("Generating game index");
         Object templateData = Collections.singletonMap("games", Maps.transformEntries(
-            Maps.fromProperties(dataProperties), new GamesPropertyTransformer(OUTPUT_GAMES_DIRECTORY, KRYO))
-        );
+            Maps.fromProperties(dataProperties), new GamesPropertyTransformer(OUTPUT_GAMES_DIRECTORY, KRYO)
+        ));
         FileWriter fileWriter = new FileWriter(new File(OUTPUT_GAMES_DIRECTORY + "index.html"));
         FREEMARKER_CONFIGURATION.getTemplate(INDEX_TEMPLATE_PATH).process(templateData, fileWriter);
         fileWriter.close();
+    }
+
+    private void processStats() {
+        System.out.println("Processing stats");
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private void saveAndArchive() throws IOException {
         System.out.println("Saving data file & archiving log file");
         dataProperties.store(new FileOutputStream(dataPropertiesFile), "Auto generated, do not modify");
-        int i = 0;
-        File file;
-        do {
-            ++i;
-            file = new File(ARCHIVE_DIRECTORY + FastDateFormat.getInstance(DATE_FORMAT.replace("/", "-")).format(new Date()) + "-games-" + i + ".log");
-        } while (file.exists());
-        //gamesLogFile.renameTo(file);
+
+        if (archive) {
+            int i = 0;
+            File file;
+            do {
+                ++i;
+                file = new File(ARCHIVE_DIRECTORY + FastDateFormat.getInstance(DATE_FORMAT.replace("/", "-")).format(new Date()) + "-games-" + i + ".log");
+            } while (file.exists());
+            gamesLogFile.renameTo(file);
+        }
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -280,14 +305,20 @@ public class Main {
 
         if (currentGame.getPlayers().size() < MIN_GAME_PLAYERS || currentGame.getDuration() < MIN_GAME_DURATION) {
             currentGameFile.delete();
+            currentGameFile.createNewFile();
             return false;
         }
 
         String gameHash = Hashing.md5().hashObject(currentGame, GameFunnel.INSTANCE).toString();
         if (dataProperties.containsKey(gameHash)) {
-            // Do not process games twice.
-            currentGameFile.delete();
-            return false;
+            if (regenerate) {
+                currentGame.setDate((String) dataProperties.get(gameHash));
+            } else {
+                // Do not process games twice.
+                currentGameFile.delete();
+                currentGameFile.createNewFile();
+                return false;
+            }
         }
 
         System.out.println("Generating game " + gameHash);
