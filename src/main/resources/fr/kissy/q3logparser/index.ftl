@@ -20,7 +20,7 @@
                 <td>${game.typeName}</td>
                 <td class="force-left"><#include "includes/title.ftl"></td>
                 <td>${game.players?size}</td>
-                <td><a class="btn btn-mini btn-primary" href="/games/${hash}.html">View</a></td>
+                <td><a class="btn btn-mini btn-primary" href="/games/${hash}/">View</a></td>
             </tr>
         </#list>
         </tbody>
