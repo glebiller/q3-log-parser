@@ -1,4 +1,5 @@
 <#macro page>
+    <@compress single_line=true>
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -45,4 +46,5 @@
         </div>
     </body>
     </html>
+    </@compress>
 </#macro>
