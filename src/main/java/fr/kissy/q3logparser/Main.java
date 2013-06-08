@@ -45,9 +45,10 @@ import java.util.regex.Pattern;
 @SuppressWarnings("UnusedDeclaration")
 public class Main {
 
-    private static final String OUTPUT_DIRECTORY = "_data/";
-    private static final String OUTPUT_GAMES_DIRECTORY = OUTPUT_DIRECTORY + "games/";
-    private static final String OUTPUT_STATS_DIRECTORY = OUTPUT_DIRECTORY + "stats/";
+    private static final String ARCHIVE_DIRECTORY = "_logs" + File.separator;
+    private static final String OUTPUT_DIRECTORY = "_data" + File.separator;
+    private static final String OUTPUT_GAMES_DIRECTORY = OUTPUT_DIRECTORY + "games" + File.separator;
+    private static final String OUTPUT_STATS_DIRECTORY = OUTPUT_DIRECTORY + "stats" + File.separator;
     private static final String OUTPUT_DATA_PROPERTY_FILE = OUTPUT_DIRECTORY + "data.properties";
     private static final String OUTPUT_CURRENT_GAME_FILE = OUTPUT_DIRECTORY + "games.log.tmp";
 
@@ -71,25 +72,36 @@ public class Main {
 
     private File dataPropertiesFile;
     private Properties dataProperties;
+    private File gamesLogFile;
     private File currentGameFile;
     private Long currentTime;
     private Game currentGame;
 
     public static void main(String[] args) throws IOException, IllegalAccessException, InvocationTargetException, ParseException, TemplateException {
-        Main main = new Main();
+        if (args.length != 1) {
+            System.out.println("Usage \"java -jar q3-log-parser.jar [path/of/games/log]\"");
+            return;
+        }
+
+        Main main = new Main(args[0]);
         main.processGames();
         main.generateGameIndex();
-        main.saveGamesProperties();
+        main.saveAndArchive();
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public Main() throws IOException {
+    public Main(String gamesLogPath) throws IOException {
         dataPropertiesFile = new File(OUTPUT_DATA_PROPERTY_FILE);
         dataProperties = new Properties();
         if (!dataPropertiesFile.exists()) {
             dataPropertiesFile.createNewFile();
         }
         dataProperties.load(new FileInputStream(dataPropertiesFile));
+
+        gamesLogFile = new File(gamesLogPath);
+        if (!gamesLogFile.exists()) {
+            throw new IllegalArgumentException("No log files found with path " + gamesLogPath);
+        }
 
         currentGameFile = new File(OUTPUT_CURRENT_GAME_FILE);
         currentGameFile.createNewFile();
@@ -137,8 +149,17 @@ public class Main {
         fileWriter.close();
     }
 
-    private void saveGamesProperties() throws IOException {
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private void saveAndArchive() throws IOException {
+        System.out.println("Saving data file & archiving log file");
         dataProperties.store(new FileOutputStream(dataPropertiesFile), "Auto generated, do not modify");
+        int i = 1;
+        File file;
+        do {
+            file = new File(ARCHIVE_DIRECTORY + FastDateFormat.getInstance(DATE_FORMAT.replace("/", "-")).format(new Date()) + "-games-" + i + ".log");
+            ++i;
+        } while (file.exists());
+        gamesLogFile.renameTo(file);
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
