@@ -1,5 +1,9 @@
 package fr.kissy.q3logparser.dto;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.KryoSerializable;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
 import com.google.common.base.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -8,7 +12,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 /**
  * @author Guillaume <lebiller@fullsix.com>
  */
-public class Flag {
+public class Flag implements KryoSerializable {
     private Integer captured = 0;
     private Integer pickedUp = 0;
     private Integer returned = 0;
@@ -47,6 +51,20 @@ public class Flag {
 
     public void setReturned(Integer returned) {
         this.returned = returned;
+    }
+
+    @Override
+    public void write(Kryo kryo, Output output) {
+        output.writeInt(captured);
+        output.writeInt(pickedUp);
+        output.writeInt(returned);
+    }
+
+    @Override
+    public void read(Kryo kryo, Input input) {
+        captured = input.readInt();
+        pickedUp = input.readInt();
+        returned = input.readInt();
     }
 
     @Override

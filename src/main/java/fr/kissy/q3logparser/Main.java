@@ -1,42 +1,62 @@
 package fr.kissy.q3logparser;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Output;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
 import com.google.common.hash.Hashing;
+import com.google.common.io.Files;
 import fr.kissy.q3logparser.dto.Game;
 import fr.kissy.q3logparser.dto.enums.GameType;
 import fr.kissy.q3logparser.dto.enums.MeanOfDeath;
 import fr.kissy.q3logparser.dto.enums.Team;
-import fr.kissy.q3logparser.function.GamesPropertyValueTransformer;
+import fr.kissy.q3logparser.function.GamesPropertyTransformer;
 import fr.kissy.q3logparser.funnel.GameFunnel;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
 import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.Charset;
 import java.text.ParseException;
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * @author Guillaume <lebiller@fullsix.com>
  */
+@SuppressWarnings("UnusedDeclaration")
 public class Main {
 
     private static final String OUTPUT_DIRECTORY = "_data/";
     private static final String OUTPUT_GAMES_DIRECTORY = OUTPUT_DIRECTORY + "games/";
     private static final String OUTPUT_STATS_DIRECTORY = OUTPUT_DIRECTORY + "stats/";
-    private static final Configuration FREEMARKER_CONFIGURATION = new Configuration();
+    private static final String OUTPUT_DATA_PROPERTY_FILE = OUTPUT_DIRECTORY + "data.properties";
+    private static final String OUTPUT_CURRENT_GAME_FILE = OUTPUT_DIRECTORY + "games.log.tmp";
+
     private static final String TITLE_TEMPLATE_PATH = "src/main/resources/fr/kissy/q3logparser/includes/title.ftl";
     private static final String GAME_TEMPLATE_PATH = "src/main/resources/fr/kissy/q3logparser/results.ftl";
     private static final String INDEX_TEMPLATE_PATH = "src/main/resources/fr/kissy/q3logparser/index.ftl";
+
+    private static final Kryo KRYO = new Kryo();
+    private static final Configuration FREEMARKER_CONFIGURATION = new Configuration();
 
     private static final Pattern LINE_PATTERN = Pattern.compile("^([0-9]{1,2}:[0-9]{2}) ([A-Za-z]+): ?(.*)$");
     private static final Pattern CLIENT_USER_INFO_CHANGED_DATA_PATTERN = Pattern.compile("^([0-9]{1,2}) n\\\\([^\\\\]+)\\\\t\\\\(\\d)(.*)$");
@@ -45,11 +65,13 @@ public class Main {
     private static final Pattern SCORE_DATA_PATTERN = Pattern.compile("^([0-9]{1,3})  ping: [0-9]{1,3}  client: ([0-9]{1,2}) (.*)$");
     private static final Pattern ITEM_DATA_PATTERN = Pattern.compile("^([0-9]{1,2}) team_CTF_(red|blue)flag$");
 
+    private static final String DATE_FORMAT = "dd/MM/yy";
     private static final Integer MIN_GAME_PLAYERS = 2;
     private static final Integer MIN_GAME_DURATION = 300;
 
-    private File gamesFile;
-    private Properties gamesProperties;
+    private File dataPropertiesFile;
+    private Properties dataProperties;
+    private File currentGameFile;
     private Long currentTime;
     private Game currentGame;
 
@@ -60,29 +82,33 @@ public class Main {
         main.saveGamesProperties();
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public Main() throws IOException {
-        gamesFile = new File(OUTPUT_DIRECTORY + "config.properties");
-        gamesProperties = new Properties();
-        if (gamesFile.exists()) {
-            gamesProperties.load(new FileInputStream(gamesFile));
-        } else {
-            gamesFile.getParentFile().mkdirs();
-            gamesFile.createNewFile();
+        dataPropertiesFile = new File(OUTPUT_DATA_PROPERTY_FILE);
+        dataProperties = new Properties();
+        if (!dataPropertiesFile.exists()) {
+            dataPropertiesFile.createNewFile();
         }
-        File gameOutputDirectory = new File(OUTPUT_GAMES_DIRECTORY);
-        if (!gameOutputDirectory.exists()) {
-            gameOutputDirectory.mkdirs();
-        }
-        File statsOutputDirectory = new File(OUTPUT_STATS_DIRECTORY);
-        if (!statsOutputDirectory.exists()) {
-            statsOutputDirectory.mkdirs();
+        dataProperties.load(new FileInputStream(dataPropertiesFile));
+
+        currentGameFile = new File(OUTPUT_CURRENT_GAME_FILE);
+        currentGameFile.createNewFile();
+        currentGameFile.deleteOnExit();
+
+        for (String directories : Lists.newArrayList(OUTPUT_GAMES_DIRECTORY, OUTPUT_STATS_DIRECTORY)) {
+            File gameOutputDirectory = new File(directories);
+            if (!gameOutputDirectory.exists()) {
+                gameOutputDirectory.mkdirs();
+            }
         }
     }
 
     private void processGames() throws IOException, IllegalAccessException, InvocationTargetException, ParseException {
+        System.out.println("Processing games log");
         List lines = FileUtils.readLines(new File("games.log"));
         for (Object object : lines) {
             String line = StringUtils.trim((String) object);
+
             Matcher matcher = LINE_PATTERN.matcher(line);
             if (!matcher.matches()) {
                 continue;
@@ -91,27 +117,32 @@ public class Main {
             currentTime = currentTime == null ? DateUtils.parseDate(matcher.group(1), "m:s").getTime() : currentTime;
             Integer time = Long.valueOf(DateUtils.parseDate(matcher.group(1), "m:s").getTime() - currentTime).intValue() / 1000;
             try {
-                MethodUtils.invokeExactMethod(this, "process" + matcher.group(2), new Object[] {time, matcher.group(3)});
+                Object result = MethodUtils.invokeExactMethod(this, "process" + matcher.group(2), new Object[]{time, matcher.group(3)});
+                if (BooleanUtils.isTrue((Boolean) result)) {
+                    Files.append(line + "\n", currentGameFile, Charset.defaultCharset());
+                }
             } catch (NoSuchMethodException e) {
-                //e.printStackTrace();
+                e.printStackTrace();
             }
         }
     }
 
     private void generateGameIndex() throws IOException, TemplateException {
         System.out.println("Generating game index");
-        Object templateData = Collections.singletonMap("games", Maps.transformValues(Maps.fromProperties(gamesProperties),
-                GamesPropertyValueTransformer.INSTANCE));
+        Object templateData = Collections.singletonMap("games", Maps.transformEntries(
+            Maps.fromProperties(dataProperties), new GamesPropertyTransformer(OUTPUT_GAMES_DIRECTORY, KRYO))
+        );
         FileWriter fileWriter = new FileWriter(new File(OUTPUT_GAMES_DIRECTORY + "index.html"));
         FREEMARKER_CONFIGURATION.getTemplate(INDEX_TEMPLATE_PATH).process(templateData, fileWriter);
         fileWriter.close();
     }
 
     private void saveGamesProperties() throws IOException {
-        gamesProperties.store(new FileOutputStream(gamesFile), "Auto generated, do not modify");
+        dataProperties.store(new FileOutputStream(dataPropertiesFile), "Auto generated, do not modify");
     }
 
-    public void processInitGame(Integer time, String data) throws IOException {
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public Boolean processInitGame(Integer time, String data) throws IOException {
         //System.out.println("InitGame: " + data);
         Queue<String> rawParams = Queues.newArrayDeque(Lists.newArrayList(data.split("\\\\")));
         Map<String, String> params = Maps.newHashMap();
@@ -123,106 +154,147 @@ public class Main {
         }
 
         GameType gameType = GameType.values()[Integer.valueOf(params.get("g_gametype"))];
-        String mapname = params.get("mapname");
-        currentGame = new Game(gameType, mapname);
+        String mapName = params.get("mapname");
+        currentGame = new Game(gameType, mapName);
+        return true;
     }
 
-    public void processClientConnect(Integer time, String data) {
+    public Boolean processClientConnect(Integer time, String data) {
         //System.out.println("ClientConnect: " + data);
         Integer playerNumber = Integer.valueOf(data);
         currentGame.processClientConnect(playerNumber);
+        return true;
     }
 
-    public void processClientUserinfoChanged(Integer time, String data) {
+    public Boolean processClientBegin(Integer time, String data) {
+        return false;
+    }
+
+    public Boolean processClientDisconnect(Integer time, String data) {
+        return false;
+    }
+
+    public Boolean processClientUserinfoChanged(Integer time, String data) {
         //System.out.println("ClientUserinfoChanged: " + data);
         Matcher matcher = CLIENT_USER_INFO_CHANGED_DATA_PATTERN.matcher(data);
         if (!matcher.matches()) {
-            return;
+            return false;
         }
 
         Integer playerNumber = Integer.valueOf(matcher.group(1));
         String name = matcher.group(2);
         Integer teamNumber = Integer.valueOf(matcher.group(3));
-        currentGame.processClientUserInfoChanged(playerNumber, name, teamNumber);
+        return currentGame.processClientUserInfoChanged(playerNumber, name, teamNumber);
     }
 
-    public void processKill(Integer time, String data) {
+    public Boolean processKill(Integer time, String data) {
         //System.out.println("Kill: " + data);
         Matcher matcher = KILL_DATA_PATTERN.matcher(data);
         if (!matcher.matches()) {
-            return;
+            return false;
         }
 
         Integer playerNumber = Integer.valueOf(matcher.group(1));
         Integer targetNumber = Integer.valueOf(matcher.group(2));
         MeanOfDeath meanOfDeath = MeanOfDeath.values()[Integer.valueOf(matcher.group(3))];
         currentGame.processKill(time, playerNumber, targetNumber, meanOfDeath);
+        return true;
     }
 
-    public void processItem(Integer time, String data) {
+    public Boolean processItem(Integer time, String data) {
         //System.out.println("Item: " + data);
         Matcher matcher = ITEM_DATA_PATTERN.matcher(data);
-        if (matcher.matches()) {
-            Integer playerNumber = Integer.valueOf(matcher.group(1));
-            Team flagTeam = Team.fromFlagColor(matcher.group(2));
-            currentGame.processItemFlag(playerNumber, flagTeam);
+        if (!matcher.matches()) {
+            return false;
         }
+
+        Integer playerNumber = Integer.valueOf(matcher.group(1));
+        Team flagTeam = Team.fromFlagColor(matcher.group(2));
+        currentGame.processItemFlag(playerNumber, flagTeam);
+        return true;
     }
 
-    public void processred(Integer time, String data) {
+    public Boolean processsay(Integer time, String data) {
+        return true;
+    }
+
+    public Boolean processsayteam(Integer time, String data) {
+        return true;
+    }
+
+    public Boolean processred(Integer time, String data) {
         //System.out.println("Red: " + data);
         Matcher matcher = FLAG_RESULT_DATA_PATTERN.matcher(data);
         if (!matcher.matches()) {
-            return;
+            return false;
         }
 
         Integer redScore = Integer.valueOf(matcher.group(1));
         Integer blueScore = Integer.valueOf(matcher.group(2));
         currentGame.processTeamScore(redScore, blueScore);
+        return true;
     }
 
-    public void processscore(Integer time, String data) {
+    public Boolean processscore(Integer time, String data) {
         //System.out.println("Score: " + data);
         Matcher matcher = SCORE_DATA_PATTERN.matcher(data);
         if (!matcher.matches()) {
-            return;
+            return false;
         }
 
         Integer score = Integer.valueOf(matcher.group(1));
         Integer playerNumber = Integer.valueOf(matcher.group(2));
         currentGame.processScore(playerNumber, score);
+        return true;
     }
 
-    public void processShutdownGame(Integer time, String data) throws IOException, TemplateException {
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public Boolean processShutdownGame(Integer time, String data) throws IOException, TemplateException {
         //System.out.println(currentGame);
         currentGame.processShutdownGame(time);
         currentTime = null;
 
-        if (currentGame.getPlayers().size() < MIN_GAME_PLAYERS) {
-            return;
-        }
-        if (currentGame.getDuration() < MIN_GAME_DURATION) {
-            return;
+        if (currentGame.getPlayers().size() < MIN_GAME_PLAYERS || currentGame.getDuration() < MIN_GAME_DURATION) {
+            currentGameFile.delete();
+            return false;
         }
 
         String gameHash = Hashing.md5().hashObject(currentGame, GameFunnel.INSTANCE).toString();
-        if (gamesProperties.containsKey(gameHash)) {
+        if (dataProperties.containsKey(gameHash)) {
             // Do not process games twice.
-            return;
+            currentGameFile.delete();
+            return false;
         }
 
         System.out.println("Generating game " + gameHash);
         Object templateData = Collections.singletonMap("game", currentGame);
 
-        StringWriter stringWriter = new StringWriter();
-        stringWriter.append(FastDateFormat.getDateInstance(FastDateFormat.SHORT).format(new Date()))
-                .append(GamesPropertyValueTransformer.GAME_PROPERTY_SEPARATOR).append(currentGame.getTypeName())
-                .append(GamesPropertyValueTransformer.GAME_PROPERTY_SEPARATOR);
-        FREEMARKER_CONFIGURATION.getTemplate(TITLE_TEMPLATE_PATH).process(templateData, stringWriter);
-        gamesProperties.put(gameHash, stringWriter.toString());
+        currentGame.setDate(FastDateFormat.getInstance(DATE_FORMAT).format(new Date()));
+        dataProperties.put(gameHash, currentGame.getDate());
 
-        FileWriter fileWriter = new FileWriter(new File(OUTPUT_GAMES_DIRECTORY + gameHash + ".html"));
+        // Create directory
+        new File(OUTPUT_GAMES_DIRECTORY + gameHash + File.separator).mkdirs();
+
+        // Write index.html
+        FileWriter fileWriter = new FileWriter(OUTPUT_GAMES_DIRECTORY + gameHash + File.separator + "index.html");
         FREEMARKER_CONFIGURATION.getTemplate(GAME_TEMPLATE_PATH).process(templateData, fileWriter);
         fileWriter.close();
+
+        // Write game.bin
+        Output output = new Output(new FileOutputStream(OUTPUT_GAMES_DIRECTORY + gameHash + File.separator + "game.bin"));
+        KRYO.writeObject(output, currentGame);
+        output.close();
+
+        // Write games.log
+        File outputGamesLog = new File(OUTPUT_GAMES_DIRECTORY + gameHash + File.separator + "game.log");
+        outputGamesLog.delete();
+        currentGameFile.renameTo(outputGamesLog);
+        currentGameFile.createNewFile();
+        return true;
     }
+
+    public Boolean processExit(Integer time, String data) {
+        return false;
+    }
+
 }

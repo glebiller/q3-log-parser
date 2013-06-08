@@ -1,5 +1,9 @@
 package fr.kissy.q3logparser.dto;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.KryoSerializable;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
 import com.google.common.base.Objects;
 import com.google.common.collect.*;
 import fr.kissy.q3logparser.dto.enums.MeanOfDeath;
@@ -15,7 +19,7 @@ import java.util.Map;
 /**
  * @author Guillaume <lebiller@fullsix.com>
  */
-public class Player implements Comparable<Player> {
+public class Player implements Comparable<Player>, KryoSerializable {
     private Integer id = null;
     private Team team = null;
     private String name = null;
@@ -30,10 +34,10 @@ public class Player implements Comparable<Player> {
     transient private Map<MeanOfDeath, WeaponKill> weaponKills = Maps.newHashMap();
     transient private Map<Player, PlayerKill> playerKills = Maps.newHashMap();
 
-    public void update(Integer playerNumber, String name, Integer teamNumber) {
+    public void update(Integer playerNumber, String name, Team team) {
         this.id = playerNumber;
         this.name = name;
-        this.team = Team.values()[teamNumber];
+        this.team = team;
     }
 
     public void addKill(Kill kill) {
@@ -191,6 +195,34 @@ public class Player implements Comparable<Player> {
 
     public void setPlayerKills(Map<Player, PlayerKill> playerKills) {
         this.playerKills = playerKills;
+    }
+
+    @Override
+    @SuppressWarnings("ConstantConditions")
+    public void write(Kryo kryo, Output output) {
+        output.writeInt(id);
+        kryo.writeObject(output, team);
+        output.writeString(name);
+        output.writeInt(score);
+        kryo.writeObject(output, streak);
+        kryo.writeObject(output, flag);
+        output.writeBoolean(hasFlag);
+        /*kryo.writeObject(output, frags);
+        kryo.writeObject(output, deaths);
+        kryo.writeObject(output, suicides);
+        kryo.writeObject(output, weaponKills);
+        kryo.writeObject(output, playerKills);*/
+    }
+
+    @Override
+    public void read(Kryo kryo, Input input) {
+        id = input.readInt();
+        team = kryo.readObject(input, Team.class);
+        name = input.readString();
+        score = input.readInt();
+        kryo.readObject(input, Streak.class);
+        kryo.readObject(input, Flag.class);
+        hasFlag = input.readBoolean();
     }
 
     @Override

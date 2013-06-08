@@ -1,15 +1,26 @@
 package fr.kissy.q3logparser.dto;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.KryoSerializable;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+import com.esotericsoftware.kryo.serializers.FieldSerializer;
 import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.hash.Hashing;
 import fr.kissy.q3logparser.dto.enums.GameType;
 import fr.kissy.q3logparser.dto.enums.MeanOfDeath;
 import fr.kissy.q3logparser.dto.enums.Team;
+import fr.kissy.q3logparser.funnel.GameFunnel;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -17,9 +28,10 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Guillaume <lebiller@fullsix.com>
  */
-public class Game {
+public class Game implements KryoSerializable {
     private static final Integer WORLD_NUMBER = 1022;
 
+    private String date;
     private GameType type;
     private String map;
     private Integer duration;
@@ -28,6 +40,9 @@ public class Game {
 
     transient private Set<Team> carriedFlags = Sets.newHashSet();
     transient private Set<Team> pickedUpFlags = Sets.newHashSet();
+
+    public Game() {
+    }
 
     public Game(GameType gameType, String mapName) throws IOException {
         this.type = gameType;
@@ -40,8 +55,14 @@ public class Game {
         players.put(playerNumber, new Player());
     }
 
-    public void processClientUserInfoChanged(Integer playerNumber, String name, Integer teamNumber) {
-        players.get(playerNumber).update(playerNumber, name, teamNumber);
+    public Boolean processClientUserInfoChanged(Integer playerNumber, String name, Integer teamNumber) {
+        Player player = players.get(playerNumber);
+        Team team = Team.values()[teamNumber];
+        if (StringUtils.equals(player.getName(), name) && player.getTeam() == team) {
+            return false;
+        }
+        player.update(playerNumber, name, team);
+        return true;
     }
 
     public void processKill(Integer time, Integer playerNumber, Integer targetNumber, MeanOfDeath meanOfDeath) {
@@ -131,6 +152,14 @@ public class Game {
         this.duration = time;
     }
 
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
     public GameType getType() {
         return type;
     }
@@ -210,6 +239,31 @@ public class Game {
 
     public void setPickedUpFlags(Set<Team> pickedUpFlags) {
         this.pickedUpFlags = pickedUpFlags;
+    }
+
+    @Override
+    public void write(Kryo kryo, Output output) {
+        output.writeString(date);
+        kryo.writeObject(output, type);
+        output.writeString(map);
+        output.writeInt(duration);
+        kryo.writeObject(output, players);
+        kryo.writeObject(output, teamScore);
+        kryo.writeObject(output, carriedFlags);
+        kryo.writeObject(output, pickedUpFlags);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void read(Kryo kryo, Input input) {
+        date = input.readString();
+        type = kryo.readObject(input, GameType.class);
+        map = input.readString();
+        duration = input.readInt();
+        players = kryo.readObject(input, HashMap.class);
+        teamScore = kryo.readObject(input, HashMap.class);
+        carriedFlags = kryo.readObject(input, HashSet.class);
+        pickedUpFlags = kryo.readObject(input, HashSet.class);
     }
 
     @Override

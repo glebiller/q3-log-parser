@@ -1,11 +1,15 @@
 package fr.kissy.q3logparser.dto;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.KryoSerializable;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
 import com.google.common.base.Objects;
 
 /**
  * @author Guillaume <lebiller@fullsix.com>
  */
-public class Streak {
+public class Streak implements KryoSerializable {
     private Integer frag = 0;
     private Integer death = 0;
 
@@ -54,6 +58,18 @@ public class Streak {
 
     public void setCurrentDeath(Integer currentDeath) {
         this.currentDeath = currentDeath;
+    }
+
+    @Override
+    public void write(Kryo kryo, Output output) {
+        output.writeInt(frag);
+        output.writeInt(death);
+    }
+
+    @Override
+    public void read(Kryo kryo, Input input) {
+        frag = input.readInt();
+        death = input.readInt();
     }
 
     @Override
