@@ -13,6 +13,7 @@ import fr.kissy.q3logparser.dto.kill.WeaponKill;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -207,22 +208,24 @@ public class Player implements Comparable<Player>, KryoSerializable {
         kryo.writeObject(output, streak);
         kryo.writeObject(output, flag);
         output.writeBoolean(hasFlag);
-        /*kryo.writeObject(output, frags);
+        kryo.writeObject(output, frags);
         kryo.writeObject(output, deaths);
         kryo.writeObject(output, suicides);
-        kryo.writeObject(output, weaponKills);
-        kryo.writeObject(output, playerKills);*/
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void read(Kryo kryo, Input input) {
         id = input.readInt();
         team = kryo.readObject(input, Team.class);
         name = input.readString();
         score = input.readInt();
-        kryo.readObject(input, Streak.class);
-        kryo.readObject(input, Flag.class);
+        streak = kryo.readObject(input, Streak.class);
+        flag = kryo.readObject(input, Flag.class);
         hasFlag = input.readBoolean();
+        frags = kryo.readObject(input, ArrayList.class);
+        deaths = kryo.readObject(input, ArrayList.class);
+        suicides = kryo.readObject(input, ArrayList.class);
     }
 
     @Override
