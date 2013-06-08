@@ -5,7 +5,7 @@
     <table class="table table-bordered" id="game-results">
         <thead>
         <tr class="force-center">
-            <th colspan="<#if game.displayTeamInfos>3<#else>2</#if>">Player</th>
+            <th colspan="<#if game.displayTeamInfos>4<#else>3</#if>">Player</th>
             <th colspan="6">Stats</th>
             <th colspan="2">Streak</th>
             <#if game.displayFlagInfos>
@@ -20,6 +20,7 @@
             <#if game.displayFlagInfos>
                 <th>Efficiency</th>
             </#if>
+            <th>Time</th>
             <th>Score</th>
             <th>Frags</th>
             <th>FPM</th>
@@ -52,13 +53,14 @@
                 <#if game.displayFlagInfos>
                     <td><span class="badge">${((statsEfficiency + flagEfficiency) / 2)?string("0.#")} %</span></td>
                 </#if>
+                <td><span class="badge">${player.formattedDuration}</span></td>
                 <td><span class="badge badge-inverse">${player.score}</span></td>
                 <td><span class="badge badge-inverse">${player.frags?size}</span></td>
                 <td><span class="badge badge-inverse">
-                    <#if game.duration == 0>
+                    <#if player.duration == 0>
                         -
                     <#else>
-                        ${(60 * player.frags?size / game.duration)?string("0.##")}
+                        ${(60 * player.frags?size / player.duration)?string("0.##")}
                     </#if>
                 </span></td>
                 <td><span class="badge badge-inverse">${player.deaths?size} (${player.suicides?size})</span></td>
@@ -66,7 +68,7 @@
                     <#if player.deaths?size == 0>
                         -
                     <#else>
-                        ${(game.duration / player.deaths?size)?round}s
+                        ${(player.duration / player.deaths?size)?round}s
                     </#if>
                 </span></td>
                 <td><span class="badge badge-inverse">${statsEfficiency?string("0.#")} %</span></td>

@@ -21,14 +21,16 @@ public class GameFunnel implements Funnel<Game> {
             .putInt(game.getDuration());
         ImmutableList<Player> sortedPlayers = Ordering.natural().immutableSortedCopy(game.getPlayers().values());
         for (Player player : sortedPlayers) {
-            into.putString(player.getTeam().name())
+            into.putInt(player.getId())
+                .putString(player.getTeam().name())
                 .putString(player.getName())
                 .putInt(player.getScore())
                 .putInt(player.getStreak().getFrag())
                 .putInt(player.getStreak().getDeath())
                 .putInt(player.getFlag().getCaptured())
                 .putInt(player.getFlag().getPickedUp())
-                .putInt(player.getFlag().getReturned());
+                .putInt(player.getFlag().getReturned())
+                .putInt(player.getStartPaying());
         }
     }
 }

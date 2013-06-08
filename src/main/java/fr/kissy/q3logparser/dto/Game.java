@@ -18,6 +18,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.IOException;
+import java.sql.Time;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -53,6 +54,11 @@ public class Game implements KryoSerializable {
 
     public void processClientConnect(Integer playerNumber) {
         players.put(playerNumber, new Player());
+    }
+
+    public void processClientBegin(Integer playerNumber, Integer time) {
+        Player player = players.get(playerNumber);
+        player.setStartPaying(time);
     }
 
     public Boolean processClientUserInfoChanged(Integer playerNumber, String name, Integer teamNumber) {
@@ -149,7 +155,10 @@ public class Game implements KryoSerializable {
     }
 
     public void processShutdownGame(Integer time) {
-        this.duration = time;
+        duration = time;
+        for (Player player : players.values()) {
+            player.processShutdownGame(time);
+        }
     }
 
     public String getDate() {

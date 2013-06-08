@@ -153,13 +153,13 @@ public class Main {
     private void saveAndArchive() throws IOException {
         System.out.println("Saving data file & archiving log file");
         dataProperties.store(new FileOutputStream(dataPropertiesFile), "Auto generated, do not modify");
-        int i = 1;
+        int i = 0;
         File file;
         do {
-            file = new File(ARCHIVE_DIRECTORY + FastDateFormat.getInstance(DATE_FORMAT.replace("/", "-")).format(new Date()) + "-games-" + i + ".log");
             ++i;
+            file = new File(ARCHIVE_DIRECTORY + FastDateFormat.getInstance(DATE_FORMAT.replace("/", "-")).format(new Date()) + "-games-" + i + ".log");
         } while (file.exists());
-        gamesLogFile.renameTo(file);
+        //gamesLogFile.renameTo(file);
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -188,7 +188,10 @@ public class Main {
     }
 
     public Boolean processClientBegin(Integer time, String data) {
-        return false;
+        //System.out.println("ClientConnect: " + data);
+        Integer playerNumber = Integer.valueOf(data);
+        currentGame.processClientBegin(playerNumber, time);
+        return true;
     }
 
     public Boolean processClientDisconnect(Integer time, String data) {

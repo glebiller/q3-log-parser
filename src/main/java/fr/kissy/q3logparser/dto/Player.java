@@ -13,21 +13,25 @@ import fr.kissy.q3logparser.dto.kill.WeaponKill;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Guillaume <lebiller@fullsix.com>
  */
 public class Player implements Comparable<Player>, KryoSerializable {
-    private Integer id = null;
-    private Team team = null;
-    private String name = null;
+    private Integer id;
+    private Team team;
+    private String name;
     private Integer score = 0;
     private Streak streak = new Streak();
     private Flag flag = new Flag();
+    private Integer startPaying;
 
+    transient private Integer duration;
     transient private Boolean hasFlag = false;
     transient private List<Kill> frags = Lists.newArrayList();
     transient private List<Kill> deaths = Lists.newArrayList();
@@ -82,6 +86,10 @@ public class Player implements Comparable<Player>, KryoSerializable {
 
     public void returnFlag() {
         this.flag.addReturned();
+    }
+
+    public void processShutdownGame(Integer time) {
+        this.duration = startPaying != null ? time - startPaying : 0;
     }
 
     public Integer getId() {
@@ -146,6 +154,27 @@ public class Player implements Comparable<Player>, KryoSerializable {
 
     public void setHasFlag(Boolean hasFlag) {
         this.hasFlag = hasFlag;
+    }
+
+    public Integer getStartPaying() {
+        return startPaying;
+    }
+
+    public void setStartPaying(Integer startPaying) {
+        this.startPaying = startPaying;
+    }
+
+    public Integer getDuration() {
+        return duration;
+    }
+
+    public String getFormattedDuration() {
+        long minutes = TimeUnit.SECONDS.toMinutes(duration);
+        return String.format("%dm %ds",minutes, TimeUnit.SECONDS.toSeconds(duration) - TimeUnit.MINUTES.toSeconds(minutes));
+    }
+
+    public void setDuration(Integer duration) {
+        this.duration = duration;
     }
 
     public List<Kill> getFrags() {
