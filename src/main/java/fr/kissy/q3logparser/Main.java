@@ -340,13 +340,13 @@ public class Main {
                 currentGameFile.createNewFile();
                 return false;
             }
+        } else {
+            currentGame.setDate(FastDateFormat.getInstance(DATE_FORMAT).format(new Date()));
+            dataProperties.put(gameHash, currentGame.getDate());
         }
 
         System.out.println("Generating game " + gameHash);
         Object templateData = Collections.singletonMap("game", currentGame);
-
-        currentGame.setDate(FastDateFormat.getInstance(DATE_FORMAT).format(new Date()));
-        dataProperties.put(gameHash, currentGame.getDate());
 
         // Create directory
         new File(OUTPUT_GAMES_DIRECTORY + gameHash + File.separator).mkdirs();
