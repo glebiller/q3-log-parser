@@ -43,4 +43,13 @@ $(document).ready(function() {
         ],
         "aaSorting": [[0, "desc"]]
     });
+    $('#stats-list').dataTable({
+        "bPaginate": false,
+        "bFilter": true,
+        "bSort": true,
+        "aoColumnDefs": [
+            {"sType": "html-badge", "aTargets": [1, 2, 3, 4, 5, 6, 7]}
+        ],
+        "aaSorting": [[0, "desc"]]
+    });
 });

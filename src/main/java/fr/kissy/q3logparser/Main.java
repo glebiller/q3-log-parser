@@ -55,7 +55,8 @@ public class Main {
     private static final String OUTPUT_CURRENT_GAME_FILE = OUTPUT_DIRECTORY + "games.log.tmp";
 
     private static final String TITLE_TEMPLATE_PATH = "src/main/resources/fr/kissy/q3logparser/includes/title.ftl";
-    private static final String GAME_TEMPLATE_PATH = "src/main/resources/fr/kissy/q3logparser/results.ftl";
+    private static final String RESULTS_TEMPLATE_PATH = "src/main/resources/fr/kissy/q3logparser/results.ftl";
+    private static final String STATS_TEMPLATE_PATH = "src/main/resources/fr/kissy/q3logparser/stats.ftl";
     private static final String INDEX_TEMPLATE_PATH = "src/main/resources/fr/kissy/q3logparser/index.ftl";
 
     private static final Kryo KRYO = new Kryo();
@@ -177,7 +178,7 @@ public class Main {
         fileWriter.close();
     }
 
-    private void processStats() {
+    private void processStats() throws IOException, TemplateException {
         System.out.println("Processing stats");
         Map<String, Game> games = Maps.transformEntries(
                 Maps.fromProperties(dataProperties), new GamesPropertyTransformer(OUTPUT_GAMES_DIRECTORY, KRYO)
@@ -185,7 +186,9 @@ public class Main {
         for (Map.Entry<String, Game> entry : games.entrySet()) {
             entry.getValue().processStats(stats);
         }
-        System.out.println(stats);
+        FileWriter fileWriter = new FileWriter(new File(OUTPUT_STATS_DIRECTORY + "index.html"));
+        FREEMARKER_CONFIGURATION.getTemplate(STATS_TEMPLATE_PATH).process(Collections.singletonMap("stats", stats), fileWriter);
+        fileWriter.close();
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -353,7 +356,7 @@ public class Main {
 
         // Write index.html
         FileWriter fileWriter = new FileWriter(OUTPUT_GAMES_DIRECTORY + gameHash + File.separator + "index.html");
-        FREEMARKER_CONFIGURATION.getTemplate(GAME_TEMPLATE_PATH).process(templateData, fileWriter);
+        FREEMARKER_CONFIGURATION.getTemplate(RESULTS_TEMPLATE_PATH).process(templateData, fileWriter);
         fileWriter.close();
 
         // Write game.bin

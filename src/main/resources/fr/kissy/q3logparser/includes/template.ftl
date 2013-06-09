@@ -31,8 +31,8 @@
             <div class="navbar-inner">
                 <a class="brand" href="/">Q3 Results</a>
                 <ul class="nav">
-                    <li><a href="/games">Games</a></li>
-                    <li><a href="/stats">Stats</a></li>
+                    <li><a href="/games/">Games</a></li>
+                    <li><a href="/stats/">Stats</a></li>
                 </ul>
             </div>
         </div>

@@ -1,7 +1,7 @@
 <#import "includes/template.ftl" as template>
 
 <@template.page>
-    <h1 class="align-team-score">Games</h1>
+    <h1>Games</h1>
     <table class="table table-bordered table-games" id="games-list">
         <thead>
             <tr class="force-center">
