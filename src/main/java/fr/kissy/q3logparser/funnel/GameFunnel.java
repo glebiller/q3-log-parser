@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Ordering;
 import com.google.common.hash.Funnel;
 import com.google.common.hash.PrimitiveSink;
-import com.sun.javafx.collections.transformation.SortedList;
 import fr.kissy.q3logparser.dto.Game;
 import fr.kissy.q3logparser.dto.Player;
 
@@ -30,7 +29,7 @@ public class GameFunnel implements Funnel<Game> {
                 .putInt(player.getFlag().getCaptured())
                 .putInt(player.getFlag().getPickedUp())
                 .putInt(player.getFlag().getReturned())
-                .putInt(player.getStartPaying());
+                .putInt(player.getStartPlaying());
         }
     }
 }

@@ -13,7 +13,6 @@ import fr.kissy.q3logparser.dto.kill.WeaponKill;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +28,7 @@ public class Player implements Comparable<Player>, KryoSerializable {
     private Integer score = 0;
     private Streak streak = new Streak();
     private Flag flag = new Flag();
-    private Integer startPaying;
+    private Integer startPlaying;
 
     transient private Integer duration;
     transient private Boolean hasFlag = false;
@@ -89,7 +88,7 @@ public class Player implements Comparable<Player>, KryoSerializable {
     }
 
     public void processShutdownGame(Integer time) {
-        this.duration = startPaying != null ? time - startPaying : 0;
+        this.duration = startPlaying != null ? time - startPlaying : 0;
     }
 
     public Integer getId() {
@@ -156,12 +155,12 @@ public class Player implements Comparable<Player>, KryoSerializable {
         this.hasFlag = hasFlag;
     }
 
-    public Integer getStartPaying() {
-        return startPaying;
+    public Integer getStartPlaying() {
+        return startPlaying;
     }
 
-    public void setStartPaying(Integer startPaying) {
-        this.startPaying = startPaying;
+    public void setStartPlaying(Integer startPlaying) {
+        this.startPlaying = startPlaying;
     }
 
     public Integer getDuration() {
@@ -236,7 +235,7 @@ public class Player implements Comparable<Player>, KryoSerializable {
         output.writeInt(score);
         kryo.writeObject(output, streak);
         kryo.writeObject(output, flag);
-        output.writeBoolean(hasFlag);
+        output.writeInt(startPlaying);
         kryo.writeObject(output, frags);
         kryo.writeObject(output, deaths);
         kryo.writeObject(output, suicides);
@@ -251,7 +250,7 @@ public class Player implements Comparable<Player>, KryoSerializable {
         score = input.readInt();
         streak = kryo.readObject(input, Streak.class);
         flag = kryo.readObject(input, Flag.class);
-        hasFlag = input.readBoolean();
+        startPlaying = input.readInt();
         frags = kryo.readObject(input, ArrayList.class);
         deaths = kryo.readObject(input, ArrayList.class);
         suicides = kryo.readObject(input, ArrayList.class);

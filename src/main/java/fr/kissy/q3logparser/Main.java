@@ -51,6 +51,7 @@ public class Main {
     private static final String OUTPUT_GAMES_DIRECTORY = OUTPUT_DIRECTORY + "games" + File.separator;
     private static final String OUTPUT_STATS_DIRECTORY = OUTPUT_DIRECTORY + "stats" + File.separator;
     private static final String OUTPUT_DATA_PROPERTY_FILE = OUTPUT_DIRECTORY + "data.properties";
+    private static final String OUTPUT_ALIAS_PROPERTY_FILE = OUTPUT_DIRECTORY + "alias.properties";
     private static final String OUTPUT_CURRENT_GAME_FILE = OUTPUT_DIRECTORY + "games.log.tmp";
 
     private static final String TITLE_TEMPLATE_PATH = "src/main/resources/fr/kissy/q3logparser/includes/title.ftl";
@@ -78,8 +79,10 @@ public class Main {
 
     // Properties
     private Map<String, Stats> stats = Maps.newHashMap();
+    private File aliasPropertiesFile;
+    private Properties aliasProperties = new Properties();
     private File dataPropertiesFile;
-    private Properties dataProperties;
+    private Properties dataProperties = new Properties();
     private File currentGameFile;
     private Long currentTime;
     private Game currentGame;
@@ -116,8 +119,13 @@ public class Main {
         }
 
         // Properties
+        aliasPropertiesFile = new File(OUTPUT_ALIAS_PROPERTY_FILE);
+        if (!aliasPropertiesFile.exists()) {
+            aliasPropertiesFile.createNewFile();
+        }
+        aliasProperties.load(new FileInputStream(aliasPropertiesFile));
+
         dataPropertiesFile = new File(OUTPUT_DATA_PROPERTY_FILE);
-        dataProperties = new Properties();
         if (!dataPropertiesFile.exists()) {
             dataPropertiesFile.createNewFile();
         }
@@ -242,6 +250,10 @@ public class Main {
         Integer playerNumber = Integer.valueOf(matcher.group(1));
         String name = matcher.group(2);
         Integer teamNumber = Integer.valueOf(matcher.group(3));
+        // Get alias if needed
+        if (aliasProperties.containsKey(name)) {
+            name = aliasProperties.getProperty(name);
+        }
         return currentGame.processClientUserInfoChanged(playerNumber, name, teamNumber);
     }
 

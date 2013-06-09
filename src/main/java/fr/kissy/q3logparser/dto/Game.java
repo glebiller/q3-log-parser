@@ -4,22 +4,17 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoSerializable;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
-import com.esotericsoftware.kryo.serializers.FieldSerializer;
 import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.google.common.hash.Hashing;
 import fr.kissy.q3logparser.dto.enums.GameType;
 import fr.kissy.q3logparser.dto.enums.MeanOfDeath;
 import fr.kissy.q3logparser.dto.enums.Team;
-import fr.kissy.q3logparser.funnel.GameFunnel;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.IOException;
-import java.sql.Time;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -58,7 +53,7 @@ public class Game implements KryoSerializable {
 
     public void processClientBegin(Integer playerNumber, Integer time) {
         Player player = players.get(playerNumber);
-        player.setStartPaying(time);
+        player.setStartPlaying(time);
     }
 
     public Boolean processClientUserInfoChanged(Integer playerNumber, String name, Integer teamNumber) {
@@ -164,7 +159,11 @@ public class Game implements KryoSerializable {
     public void processStats(Map<String, Stats> stats) {
         for (Player player : players.values()) {
             // Skip players that did not played
-            if (player.getStartPaying() == null) {
+            if (player.getStartPlaying() == null) {
+                continue;
+            }
+            // Skip "UnamedPlayer"
+            if (StringUtils.equalsIgnoreCase(player.getName(), "UnnamedPlayer")) {
                 continue;
             }
             if (!stats.containsKey(player.getName())) {
