@@ -161,6 +161,20 @@ public class Game implements KryoSerializable {
         }
     }
 
+    public void processStats(Map<String, Stats> stats) {
+        for (Player player : players.values()) {
+            // Skip players that did not played
+            if (player.getStartPaying() == null) {
+                continue;
+            }
+            if (!stats.containsKey(player.getName())) {
+                stats.put(player.getName(), new Stats(player.getName()));
+            }
+            Stats playerStats = stats.get(player.getName());
+            playerStats.addGameStats(date, player);
+        }
+    }
+
     public String getDate() {
         return date;
     }

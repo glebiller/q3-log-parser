@@ -8,6 +8,7 @@ import com.google.common.collect.Queues;
 import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
 import fr.kissy.q3logparser.dto.Game;
+import fr.kissy.q3logparser.dto.Stats;
 import fr.kissy.q3logparser.dto.enums.GameType;
 import fr.kissy.q3logparser.dto.enums.MeanOfDeath;
 import fr.kissy.q3logparser.dto.enums.Team;
@@ -76,6 +77,7 @@ public class Main {
     private Boolean regenerate;
 
     // Properties
+    private Map<String, Stats> stats = Maps.newHashMap();
     private File dataPropertiesFile;
     private Properties dataProperties;
     private File currentGameFile;
@@ -169,6 +171,13 @@ public class Main {
 
     private void processStats() {
         System.out.println("Processing stats");
+        Map<String, Game> games = Maps.transformEntries(
+                Maps.fromProperties(dataProperties), new GamesPropertyTransformer(OUTPUT_GAMES_DIRECTORY, KRYO)
+        );
+        for (Map.Entry<String, Game> entry : games.entrySet()) {
+            entry.getValue().processStats(stats);
+        }
+        System.out.println(stats);
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
