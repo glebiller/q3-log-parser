@@ -60,7 +60,7 @@
                     <#if player.duration == 0>
                         -
                     <#else>
-                        ${(60 * player.frags?size / player.duration)?string("0.##")}
+                        ${(60 * player.frags?size / player.duration)?string("0.00")}
                     </#if>
                 </span></td>
                 <td><span class="badge badge-inverse">${player.deaths?size} (${player.suicides?size})</span></td>
@@ -108,7 +108,7 @@
                                     <#if player.frags?size == 0>
                                         -
                                     <#else>
-                                        ${(100 * weaponKill.frags / player.frags?size)?string("0.##")} %
+                                        ${(100 * weaponKill.frags / player.frags?size)?string("0.00")} %
                                     </#if>
                                 </span></td>
                             </tr>
@@ -131,7 +131,7 @@
                                     <#if player.frags?size == 0>
                                         -
                                     <#else>
-                                        ${(100 * playerKill.frags / player.frags?size)?string("0.##")} %
+                                        ${(100 * playerKill.frags / player.frags?size)?string("0.00")} %
                                     </#if>
                                 </span></td>
                             </tr>
