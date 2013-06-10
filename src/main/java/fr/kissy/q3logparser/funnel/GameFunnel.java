@@ -29,7 +29,7 @@ public class GameFunnel implements Funnel<Game> {
                 .putInt(player.getFlag().getCaptured())
                 .putInt(player.getFlag().getPickedUp())
                 .putInt(player.getFlag().getReturned())
-                .putInt(player.getStartPlaying())
+                .putInt(player.getStartPlaying() == null ? -1 : player.getStartPlaying())
                 .putInt(player.getFrags().size())
                 .putInt(player.getDeaths().size())
                 .putInt(player.getSuicides().size());

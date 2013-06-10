@@ -54,9 +54,9 @@ public class Main {
     private static final String OUTPUT_ALIAS_PROPERTY_FILE = OUTPUT_DIRECTORY + "alias.properties";
     private static final String OUTPUT_CURRENT_GAME_FILE = OUTPUT_DIRECTORY + "games.log.tmp";
 
-    private static final String RESULTS_TEMPLATE_PATH = "fr" + File.separator + "kissy" + File.separator + "q3logparser" + File.separator + "results.ftl";
-    private static final String STATS_TEMPLATE_PATH = "fr" + File.separator + "kissy" + File.separator + "q3logparser" + File.separator + "stats.ftl";
-    private static final String INDEX_TEMPLATE_PATH = "fr" + File.separator + "kissy" + File.separator + "q3logparser" + File.separator + "index.ftl";
+    private static final String RESULTS_TEMPLATE_PATH = "/fr/kissy/q3logparser/results.ftl";
+    private static final String STATS_TEMPLATE_PATH = "/fr/kissy/q3logparser/stats.ftl";
+    private static final String INDEX_TEMPLATE_PATH = "/fr/kissy/q3logparser/index.ftl";
 
     private static final Kryo KRYO = new Kryo();
     private static final Configuration FREEMARKER_CONFIGURATION = new Configuration();
@@ -86,10 +86,11 @@ public class Main {
     private File currentGameFile;
     private Long currentTime;
     private Game currentGame;
+    private String gameDate;
 
     public static void main(String[] args) throws IOException, IllegalAccessException, InvocationTargetException, ParseException, TemplateException {
         if (args.length < 1) {
-            System.out.println("Usage \"java -jar q3-log-parser.jar path/of/games/log [archive:true|false] [regenerate:true|false]\"");
+            System.out.println("Usage \"java -jar q3-log-parser.jar path/of/games/log [archive:true|false] [regenerate:true|false] [date:" + DATE_FORMAT + "]\"");
             return;
         }
 
@@ -101,7 +102,7 @@ public class Main {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public Main(String[] args) throws IOException {
+    public Main(String[] args) throws IOException, ParseException {
         FREEMARKER_CONFIGURATION.setClassForTemplateLoading(this.getClass(), "/");
 
         // Parameters
@@ -118,6 +119,11 @@ public class Main {
             regenerate = Boolean.valueOf(args[2]);
         } else {
             regenerate = false;
+        }
+        if (args.length >= 4) {
+            gameDate = FastDateFormat.getInstance(DATE_FORMAT).format(DateUtils.parseDate(args[3], DATE_FORMAT));
+        } else {
+            gameDate = FastDateFormat.getInstance(DATE_FORMAT).format(new Date());
         }
 
         // Properties
@@ -202,7 +208,7 @@ public class Main {
             File file;
             do {
                 ++i;
-                file = new File(ARCHIVE_DIRECTORY + FastDateFormat.getInstance(DATE_FORMAT.replace("/", "-")).format(new Date()) + "-games-" + i + ".log");
+                file = new File(ARCHIVE_DIRECTORY + gameDate.replace("/", "-") + "-games-" + i + ".log");
             } while (file.exists());
             gamesLogFile.renameTo(file);
         }
@@ -345,7 +351,7 @@ public class Main {
                 return false;
             }
         } else {
-            currentGame.setDate(FastDateFormat.getInstance(DATE_FORMAT).format(new Date()));
+            currentGame.setDate(gameDate);
             dataProperties.put(gameHash, currentGame.getDate());
         }
 
