@@ -153,7 +153,7 @@ public class Main {
 
     private void processGames() throws IOException, IllegalAccessException, InvocationTargetException, ParseException {
         System.out.println("Processing games log");
-        List lines = FileUtils.readLines(new File("games.log"));
+        List lines = FileUtils.readLines(gamesLogFile);
         for (Object object : lines) {
             String line = StringUtils.trim((String) object);
 
@@ -371,7 +371,7 @@ public class Main {
         KRYO.writeObject(output, currentGame);
         output.close();
 
-        // Write games.log
+        // Write game.log archive
         File outputGamesLog = new File(OUTPUT_GAMES_DIRECTORY + gameHash + File.separator + "game.log");
         outputGamesLog.delete();
         currentGameFile.renameTo(outputGamesLog);
