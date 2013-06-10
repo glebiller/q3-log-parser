@@ -235,7 +235,7 @@ public class Player implements Comparable<Player>, KryoSerializable {
         output.writeInt(score);
         kryo.writeObject(output, streak);
         kryo.writeObject(output, flag);
-        output.writeInt(startPlaying);
+        output.writeInt(startPlaying == null ? -1 : startPlaying);
         kryo.writeObject(output, frags);
         kryo.writeObject(output, deaths);
         kryo.writeObject(output, suicides);
@@ -250,7 +250,8 @@ public class Player implements Comparable<Player>, KryoSerializable {
         score = input.readInt();
         streak = kryo.readObject(input, Streak.class);
         flag = kryo.readObject(input, Flag.class);
-        startPlaying = input.readInt();
+        int startPlayingRead = input.readInt();
+        startPlaying = startPlayingRead == -1 ? null : startPlayingRead;
         frags = kryo.readObject(input, ArrayList.class);
         deaths = kryo.readObject(input, ArrayList.class);
         suicides = kryo.readObject(input, ArrayList.class);
