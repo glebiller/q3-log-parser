@@ -1,4 +1,4 @@
-<#import "includes/template.ftl" as template>
+<#import "/fr/kissy/q3logparser/includes/template.ftl" as template>
 
 <@template.page>
     <h1>Stats</h1>

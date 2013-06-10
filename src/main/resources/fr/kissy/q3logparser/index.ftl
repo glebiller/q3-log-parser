@@ -1,4 +1,4 @@
-<#import "includes/template.ftl" as template>
+<#import "/fr/kissy/q3logparser/includes/template.ftl" as template>
 
 <@template.page>
     <h1>Games</h1>
@@ -18,7 +18,7 @@
             <tr class="force-center">
                 <td>${game.date}</td>
                 <td>${game.typeName}</td>
-                <td class="force-left"><#include "includes/title.ftl"></td>
+                <td class="force-left"><#include "/fr/kissy/q3logparser/includes/title.ftl"></td>
                 <td>${game.players?size}</td>
                 <td><a class="btn btn-mini btn-primary" href="/games/${hash}/">View</a></td>
             </tr>

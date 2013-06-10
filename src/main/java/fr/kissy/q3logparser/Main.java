@@ -54,10 +54,9 @@ public class Main {
     private static final String OUTPUT_ALIAS_PROPERTY_FILE = OUTPUT_DIRECTORY + "alias.properties";
     private static final String OUTPUT_CURRENT_GAME_FILE = OUTPUT_DIRECTORY + "games.log.tmp";
 
-    private static final String TITLE_TEMPLATE_PATH = "src/main/resources/fr/kissy/q3logparser/includes/title.ftl";
-    private static final String RESULTS_TEMPLATE_PATH = "src/main/resources/fr/kissy/q3logparser/results.ftl";
-    private static final String STATS_TEMPLATE_PATH = "src/main/resources/fr/kissy/q3logparser/stats.ftl";
-    private static final String INDEX_TEMPLATE_PATH = "src/main/resources/fr/kissy/q3logparser/index.ftl";
+    private static final String RESULTS_TEMPLATE_PATH = "fr" + File.separator + "kissy" + File.separator + "q3logparser" + File.separator + "results.ftl";
+    private static final String STATS_TEMPLATE_PATH = "fr" + File.separator + "kissy" + File.separator + "q3logparser" + File.separator + "stats.ftl";
+    private static final String INDEX_TEMPLATE_PATH = "fr" + File.separator + "kissy" + File.separator + "q3logparser" + File.separator + "index.ftl";
 
     private static final Kryo KRYO = new Kryo();
     private static final Configuration FREEMARKER_CONFIGURATION = new Configuration();
@@ -103,6 +102,8 @@ public class Main {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public Main(String[] args) throws IOException {
+        FREEMARKER_CONFIGURATION.setClassForTemplateLoading(this.getClass(), "/");
+
         // Parameters
         gamesLogFile = new File(args[0]);
         if (!gamesLogFile.exists()) {

@@ -10,7 +10,7 @@
         <!-- Le styles -->
         <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
         <style type="text/css">
-            <#include "styles.css.ftl">
+            <#include "/fr/kissy/q3logparser/includes/styles.css.ftl">
         </style>
 
         <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -22,7 +22,7 @@
         <script src="http://cdnjs.cloudflare.com/ajax/libs/datatables/1.9.4/jquery.dataTables.min.js"></script>
         <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
         <script type="text/javascript">
-            <#include "scripts.js.ftl">
+            <#include "/fr/kissy/q3logparser/includes/scripts.js.ftl">
         </script>
     </head>
 
