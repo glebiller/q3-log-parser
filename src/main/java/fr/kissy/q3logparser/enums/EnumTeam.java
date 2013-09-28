@@ -1,20 +1,20 @@
-package fr.kissy.q3logparser.dto.enums;
+package fr.kissy.q3logparser.enums;
 
 import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Guillaume <lebiller@fullsix.com>
  */
-public enum Team {
+public enum EnumTeam {
     TEAM_FREE("", ""),
-    TEAM_RED("R", "important"),
-    TEAM_BLUE("B", "info"),
+    TEAM_RED("R", "danger"),
+    TEAM_BLUE("B", "primary"),
     TEAM_SPECTATOR("", "");
 
     private final String name;
     private final String cssClass;
 
-    private Team(String name, String cssClass) {
+    private EnumTeam(String name, String cssClass) {
         this.name = name;
         this.cssClass = cssClass;
     }
@@ -27,7 +27,7 @@ public enum Team {
         return cssClass;
     }
 
-    public Team getOpposite() {
+    public EnumTeam getOpposite() {
         switch (this) {
             case TEAM_BLUE:
                 return TEAM_RED;
@@ -38,8 +38,8 @@ public enum Team {
         }
     }
 
-    public static Team fromFlagColor(String flagColor) {
-        for (Team team : Team.values()) {
+    public static EnumTeam fromFlagColor(String flagColor) {
+        for (EnumTeam team : EnumTeam.values()) {
             if (StringUtils.containsIgnoreCase(team.name(), flagColor)) {
                 return team;
             }

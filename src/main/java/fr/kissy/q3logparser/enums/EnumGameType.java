@@ -1,9 +1,9 @@
-package fr.kissy.q3logparser.dto.enums;
+package fr.kissy.q3logparser.enums;
 
 /**
  * @author Guillaume <lebiller@fullsix.com>
  */
-public enum GameType {
+public enum EnumGameType {
     FREE_FOR_ALL("FFA"),
     TOURNAMENT("TOUR"),
     SINGLE_PLAYER("SP"),
@@ -12,7 +12,7 @@ public enum GameType {
 
     private final String name;
 
-    private GameType(String name) {
+    private EnumGameType(String name) {
         this.name = name;
     }
 

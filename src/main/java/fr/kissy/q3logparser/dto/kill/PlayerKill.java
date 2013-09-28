@@ -2,7 +2,6 @@ package fr.kissy.q3logparser.dto.kill;
 
 import com.google.common.base.Objects;
 import fr.kissy.q3logparser.dto.Player;
-import fr.kissy.q3logparser.dto.enums.MeanOfDeath;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 

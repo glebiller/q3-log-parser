@@ -1,7 +1,7 @@
 package fr.kissy.q3logparser.dto.kill;
 
 import com.google.common.base.Objects;
-import fr.kissy.q3logparser.dto.enums.MeanOfDeath;
+import fr.kissy.q3logparser.enums.EnumMeanOfDeath;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -9,10 +9,10 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * @author Guillaume <lebiller@fullsix.com>
  */
 public class WeaponKill implements Comparable<WeaponKill> {
-    private MeanOfDeath meanOfDeath;
+    private EnumMeanOfDeath meanOfDeath;
     private Integer frags = 0;
 
-    public WeaponKill(MeanOfDeath meanOfDeath) {
+    public WeaponKill(EnumMeanOfDeath meanOfDeath) {
         this.meanOfDeath = meanOfDeath;
     }
 
@@ -20,7 +20,7 @@ public class WeaponKill implements Comparable<WeaponKill> {
         ++this.frags;
     }
 
-    public MeanOfDeath getMeanOfDeath() {
+    public EnumMeanOfDeath getMeanOfDeath() {
         return meanOfDeath;
     }
 
@@ -28,7 +28,7 @@ public class WeaponKill implements Comparable<WeaponKill> {
         return meanOfDeath.getName();
     }
 
-    public void setMeanOfDeath(MeanOfDeath meanOfDeath) {
+    public void setMeanOfDeath(EnumMeanOfDeath meanOfDeath) {
         this.meanOfDeath = meanOfDeath;
     }
 

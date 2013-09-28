@@ -1,9 +1,9 @@
-package fr.kissy.q3logparser.dto.enums;
+package fr.kissy.q3logparser.enums;
 
 /**
  * @author Guillaume <lebiller@fullsix.com>
  */
-public enum MeanOfDeath {
+public enum EnumMeanOfDeath {
     MOD_UNKNOWN(""),
     MOD_SHOTGUN("Shotgun"),
     MOD_GAUNTLET("Gauntlet"),
@@ -36,7 +36,7 @@ public enum MeanOfDeath {
 
     private final String name;
 
-    private MeanOfDeath(String name) {
+    private EnumMeanOfDeath(String name) {
         this.name = name;
     }
 

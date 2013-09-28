@@ -1,5 +1,5 @@
 $.extend(true, $.fn.dataTable.defaults, {
-    "sDom": "<'row-fluid'<'span12'f>r>t"
+    "sDom": "<'row'<'col-md-12'f>r>t"
 });
 $.extend($.fn.dataTableExt.oStdClasses, {
     "sWrapper": "dataTables_wrapper form-inline"
@@ -25,7 +25,7 @@ $.extend($.fn.dataTableExt.ofnSearch, {
     }
 });
 $(document).ready(function() {
-    $('#game-results').dataTable({
+    $('#match-results').dataTable({
         "bPaginate": false,
         "bFilter": true,
         "bSort": true,
@@ -34,7 +34,7 @@ $(document).ready(function() {
         ],
         "aaSorting": [[2, "desc"]]
     });
-    $('#games-list').dataTable({
+    $('#matches-list').dataTable({
         "bPaginate": false,
         "bFilter": true,
         "bSort": true,

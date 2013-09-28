@@ -23,18 +23,17 @@
         <tbody>
         <#list stats?values as stat>
             <tr class="force-center">
-                <td class="force-left">
-                    <a href="#modal_${stat_index}" data-toggle="modal">${stat.player}</a>
-                </td>
-                <td><span class="badge">${stat.games}</span></td>
-                <td><span class="badge badge-inverse">${stat.score}</span></td>
-                <td><span class="badge badge-inverse">${stat.frags}</span></td>
-                <td><span class="badge badge-inverse">${stat.deaths} (${stat.suicides})</span></td>
-                <td><span class="badge badge-success">${(stat.score / stat.games)?string("0.00")}</span></td>
-                <td><span class="badge badge-success">${(stat.frags / stat.games)?string("0.00")}</span></td>
-                <td><span class="badge badge-success">${(stat.deaths / stat.games)?string("0.00")} (${(stat.suicides / stat.games)?string("0.00")})</span></td>
+                <td class="force-left">${stat.player}</td>
+                <td><span class="badge">${stat.matches}</span></td>
+                <td>${stat.score}</td>
+                <td>${stat.frags}</td>
+                <td>${stat.deaths} (${stat.suicides})</td>
+                <td>${(stat.score / stat.matches)?string("0.00")}</td>
+                <td>${(stat.frags / stat.matches)?string("0.00")}</td>
+                <td>${(stat.deaths / stat.matches)?string("0.00")} (${(stat.suicides / stat.matches)?string("0.00")})</td>
             </tr>
         </#list>
         </tbody>
     </table>
+    <p class="text-center">Number of matches parsed : <strong>${matchesCount}</strong></p>
 </@template.page>

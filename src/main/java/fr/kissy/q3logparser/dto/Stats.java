@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public class Stats {
     private String player;
-    private Integer games = 0;
+    private Integer matches = 0;
     private Integer score = 0;
     private Integer frags = 0;
     private Integer deaths = 0;
@@ -40,7 +40,7 @@ public class Stats {
             dailySuicides.put(date, Lists.<Integer>newArrayList());
         }
 
-        ++games;
+        ++matches;
         score += player.getScore();
         dailyScore.get(date).add(player.getScore());
         frags += player.getFrags().size();
@@ -63,12 +63,12 @@ public class Stats {
         this.player = player;
     }
 
-    public Integer getGames() {
-        return games;
+    public Integer getMatches() {
+        return matches;
     }
 
-    public void setGames(Integer games) {
-        this.games = games;
+    public void setMatches(Integer matches) {
+        this.matches = matches;
     }
 
     public Integer getScore() {

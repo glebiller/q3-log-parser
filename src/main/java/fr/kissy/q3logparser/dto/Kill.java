@@ -5,12 +5,9 @@ import com.esotericsoftware.kryo.KryoSerializable;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.google.common.base.Objects;
-import fr.kissy.q3logparser.dto.enums.MeanOfDeath;
-import fr.kissy.q3logparser.dto.enums.Team;
+import fr.kissy.q3logparser.enums.EnumMeanOfDeath;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import java.util.List;
 
 /**
  * @author Guillaume <lebiller@fullsix.com>
@@ -20,13 +17,13 @@ public class Kill implements KryoSerializable {
     private Integer playerId;
     private Player target;
     private Integer targetId;
-    private Integer time;
-    private MeanOfDeath meanOfDeath;
+    private Long time;
+    private EnumMeanOfDeath meanOfDeath;
 
     public Kill() {
     }
 
-    public Kill(Player player, Player target, Integer time, MeanOfDeath meanOfDeath) {
+    public Kill(Player player, Player target, Long time, EnumMeanOfDeath meanOfDeath) {
         this.player = player;
         this.target = target;
         this.time = time;
@@ -69,19 +66,19 @@ public class Kill implements KryoSerializable {
         this.targetId = targetId;
     }
 
-    public Integer getTime() {
+    public Long getTime() {
         return time;
     }
 
-    public void setTime(Integer time) {
+    public void setTime(Long time) {
         this.time = time;
     }
 
-    public MeanOfDeath getMeanOfDeath() {
+    public EnumMeanOfDeath getMeanOfDeath() {
         return meanOfDeath;
     }
 
-    public void setMeanOfDeath(MeanOfDeath meanOfDeath) {
+    public void setMeanOfDeath(EnumMeanOfDeath meanOfDeath) {
         this.meanOfDeath = meanOfDeath;
     }
 
@@ -112,7 +109,7 @@ public class Kill implements KryoSerializable {
     public void write(Kryo kryo, Output output) {
         output.writeInt(player.getId());
         output.writeInt(target.getId());
-        output.writeInt(time);
+        output.writeLong(time);
         kryo.writeObject(output, meanOfDeath);
     }
 
@@ -120,7 +117,7 @@ public class Kill implements KryoSerializable {
     public void read(Kryo kryo, Input input) {
         playerId = input.readInt();
         targetId = input.readInt();
-        time = input.readInt();
-        meanOfDeath = kryo.readObject(input, MeanOfDeath.class);
+        time = input.readLong();
+        meanOfDeath = kryo.readObject(input, EnumMeanOfDeath.class);
     }
 }

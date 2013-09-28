@@ -1,8 +1,8 @@
 <#import "/fr/kissy/q3logparser/includes/template.ftl" as template>
 
 <@template.page>
-    <h1>Games</h1>
-    <table class="table table-bordered table-games" id="games-list">
+    <h1>Matches</h1>
+    <table class="table table-bordered table-matches" id="matches-list">
         <thead>
             <tr class="force-center">
                 <th>Date</th>
@@ -13,17 +13,17 @@
             </tr>
         </thead>
         <tbody>
-        <#list games?keys as hash>
-            <#assign game=games[hash]>
+        <#list matches?keys as hash>
+            <#assign match=matches[hash]>
             <tr class="force-center">
-                <td>${game.date}</td>
-                <td>${game.typeName}</td>
+                <td>${match.date}</td>
+                <td>${match.typeName}</td>
                 <td class="force-left"><#include "/fr/kissy/q3logparser/includes/title.ftl"></td>
-                <td>${game.players?size}</td>
-                <td><a class="btn btn-mini btn-primary" href="/games/${hash}/">View</a></td>
+                <td>${match.players?size}</td>
+                <td><a class="btn btn-xs btn-default" href="/matches/${hash}/">View</a></td>
             </tr>
         </#list>
         </tbody>
     </table>
-    <p class="text-center">Number of games parsed : <strong>${games?size}</strong></p>
+    <p class="text-center">Number of matches parsed : <strong>${matches?size}</strong></p>
 </@template.page>

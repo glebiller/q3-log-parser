@@ -5,9 +5,11 @@ import com.esotericsoftware.kryo.KryoSerializable;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.google.common.base.Objects;
-import com.google.common.collect.*;
-import fr.kissy.q3logparser.dto.enums.MeanOfDeath;
-import fr.kissy.q3logparser.dto.enums.Team;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Ordering;
+import fr.kissy.q3logparser.enums.EnumMeanOfDeath;
+import fr.kissy.q3logparser.enums.EnumTeam;
 import fr.kissy.q3logparser.dto.kill.PlayerKill;
 import fr.kissy.q3logparser.dto.kill.WeaponKill;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -23,22 +25,22 @@ import java.util.concurrent.TimeUnit;
  */
 public class Player implements Comparable<Player>, KryoSerializable {
     private Integer id;
-    private Team team;
+    private EnumTeam team;
     private String name;
     private Integer score = 0;
     private Streak streak = new Streak();
     private Flag flag = new Flag();
-    private Integer startPlaying;
+    private Long startPlaying;
+    private long duration;
+    private List<Kill> frags = Lists.newArrayList();
+    private List<Kill> deaths = Lists.newArrayList();
+    private List<Kill> suicides = Lists.newArrayList();
 
-    transient private Integer duration;
-    transient private Boolean hasFlag = false;
-    transient private List<Kill> frags = Lists.newArrayList();
-    transient private List<Kill> deaths = Lists.newArrayList();
-    transient private List<Kill> suicides = Lists.newArrayList();
-    transient private Map<MeanOfDeath, WeaponKill> weaponKills = Maps.newHashMap();
-    transient private Map<Player, PlayerKill> playerKills = Maps.newHashMap();
+    private transient Map<EnumMeanOfDeath, WeaponKill> weaponKills = Maps.newHashMap();
+    private transient Map<Player, PlayerKill> playerKills = Maps.newHashMap();
+    private transient Boolean hasFlag = false;
 
-    public void update(Integer playerNumber, String name, Team team) {
+    public void update(Integer playerNumber, String name, EnumTeam team) {
         this.id = playerNumber;
         this.name = name;
         this.team = team;
@@ -87,8 +89,8 @@ public class Player implements Comparable<Player>, KryoSerializable {
         this.flag.addReturned();
     }
 
-    public void processShutdownGame(Integer time) {
-        this.duration = startPlaying != null ? time - startPlaying : 0;
+    public void processShutdownGame(Long time) {
+        this.duration = startPlaying != null ? time - startPlaying : 0L;
     }
 
     public Integer getId() {
@@ -99,7 +101,7 @@ public class Player implements Comparable<Player>, KryoSerializable {
         this.id = id;
     }
 
-    public Team getTeam() {
+    public EnumTeam getTeam() {
         return team;
     }
 
@@ -111,7 +113,7 @@ public class Player implements Comparable<Player>, KryoSerializable {
         return team.getName();
     }
 
-    public void setTeam(Team team) {
+    public void setTeam(EnumTeam team) {
         this.team = team;
     }
 
@@ -147,23 +149,15 @@ public class Player implements Comparable<Player>, KryoSerializable {
         this.flag = flag;
     }
 
-    public Boolean getHasFlag() {
-        return hasFlag;
-    }
-
-    public void setHasFlag(Boolean hasFlag) {
-        this.hasFlag = hasFlag;
-    }
-
-    public Integer getStartPlaying() {
+    public Long getStartPlaying() {
         return startPlaying;
     }
 
-    public void setStartPlaying(Integer startPlaying) {
+    public void setStartPlaying(Long startPlaying) {
         this.startPlaying = startPlaying;
     }
 
-    public Integer getDuration() {
+    public long getDuration() {
         return duration;
     }
 
@@ -200,7 +194,7 @@ public class Player implements Comparable<Player>, KryoSerializable {
         this.suicides = suicides;
     }
 
-    public Map<MeanOfDeath, WeaponKill> getWeaponKills() {
+    public Map<EnumMeanOfDeath, WeaponKill> getWeaponKills() {
         return weaponKills;
     }
 
@@ -209,7 +203,7 @@ public class Player implements Comparable<Player>, KryoSerializable {
         return Ordering.natural().immutableSortedCopy(weaponKills.values());
     }
 
-    public void setWeaponKills(Map<MeanOfDeath, WeaponKill> weaponKills) {
+    public void setWeaponKills(Map<EnumMeanOfDeath, WeaponKill> weaponKills) {
         this.weaponKills = weaponKills;
     }
 
@@ -226,6 +220,14 @@ public class Player implements Comparable<Player>, KryoSerializable {
         this.playerKills = playerKills;
     }
 
+    public Boolean getHasFlag() {
+        return hasFlag;
+    }
+
+    public void setHasFlag(Boolean hasFlag) {
+        this.hasFlag = hasFlag;
+    }
+
     @Override
     @SuppressWarnings("ConstantConditions")
     public void write(Kryo kryo, Output output) {
@@ -235,7 +237,7 @@ public class Player implements Comparable<Player>, KryoSerializable {
         output.writeInt(score);
         kryo.writeObject(output, streak);
         kryo.writeObject(output, flag);
-        output.writeInt(startPlaying == null ? -1 : startPlaying);
+        output.writeLong(startPlaying == null ? -1L : startPlaying);
         kryo.writeObject(output, frags);
         kryo.writeObject(output, deaths);
         kryo.writeObject(output, suicides);
@@ -245,13 +247,13 @@ public class Player implements Comparable<Player>, KryoSerializable {
     @SuppressWarnings("unchecked")
     public void read(Kryo kryo, Input input) {
         id = input.readInt();
-        team = kryo.readObject(input, Team.class);
+        team = kryo.readObject(input, EnumTeam.class);
         name = input.readString();
         score = input.readInt();
         streak = kryo.readObject(input, Streak.class);
         flag = kryo.readObject(input, Flag.class);
-        int startPlayingRead = input.readInt();
-        startPlaying = startPlayingRead == -1 ? null : startPlayingRead;
+        long startPlayingRead = input.readLong();
+        startPlaying = startPlayingRead == -1L ? null : startPlayingRead;
         frags = kryo.readObject(input, ArrayList.class);
         deaths = kryo.readObject(input, ArrayList.class);
         suicides = kryo.readObject(input, ArrayList.class);
